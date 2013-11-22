@@ -58,6 +58,9 @@ public class ImageCacheService {
     public boolean getImageData(Path path,String filePath, long timeModified, int type, BytesBuffer buffer) {
         byte[] key = makeKey(path,filePath, timeModified, type);
         long cacheKey = Utils.crc64Long(key);
+        if(mCache == null){
+        	return false;
+        }
         try {
             LookupRequest request = new LookupRequest();
             request.key = cacheKey;
@@ -83,6 +86,9 @@ public class ImageCacheService {
         ByteBuffer buffer = ByteBuffer.allocate(key.length + value.length);
         buffer.put(key);
         buffer.put(value);
+        if(mCache == null){
+        	return;
+        }
         synchronized (mCache) {
             try {
                 mCache.insert(cacheKey, buffer.array());
