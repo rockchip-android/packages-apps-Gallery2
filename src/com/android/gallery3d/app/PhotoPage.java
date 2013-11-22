@@ -16,9 +16,13 @@
 
 package com.android.gallery3d.app;
 
+import java.util.ArrayList;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar.OnMenuVisibilityListener;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -1221,18 +1225,40 @@ public abstract class PhotoPage extends ActivityState implements
         mMenuExecutor.startSingleItemAction(R.id.action_delete, mDeletePath);
         mDeletePath = null;
     }
+    
+    public static boolean isSeviceWorked(Context context, String serviceName) {
+		ActivityManager myManager = (ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		ArrayList<RunningServiceInfo> runningService = (ArrayList<RunningServiceInfo>) myManager
+				.getRunningServices(30);
+		for (int i = 0; i < runningService.size(); i++) {
+			if (runningService.get(i).service.getClassName().toString().equals(
+					serviceName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
     public void playVideo(Activity activity, Uri uri, String title) {
+    	boolean isWork = isSeviceWorked(activity,"com.android.rk.mediafloat.MediaFloatService");
+		if (!isWork) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW)
                     .setDataAndType(uri, "video/*")
                     .putExtra(Intent.EXTRA_TITLE, title)
                     .putExtra(MovieActivity.KEY_TREAT_UP_AS_BACK, true);
+            intent.setClass(activity, MovieActivity.class);
             activity.startActivityForResult(intent, REQUEST_PLAY_VIDEO);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(activity, activity.getString(R.string.video_err),
                     Toast.LENGTH_SHORT).show();
         }
+		} else {
+			Intent intent = new Intent("com.rk.app.mediafloat.CUSTOM_ACTION");
+			intent.putExtra("URI", uri.toString());
+			activity.startService(intent);
+    	}
     }
 
     private void setCurrentPhotoByIntent(Intent intent) {
