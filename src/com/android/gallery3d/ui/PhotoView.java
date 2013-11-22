@@ -505,6 +505,8 @@ public class PhotoView extends GLView {
         }
 
         updateCameraRect();
+        mTileView.isGifStream();
+        mTileView.decodePhoto();
         mPositionController.setConstrainedFrame(mCameraRect);
         if (changeSize) {
             mPositionController.setViewSize(getWidth(), getHeight());
@@ -1114,6 +1116,10 @@ public class PhotoView extends GLView {
                     && ((vy > 0) == (centerY > getHeight() / 2))
                     && dY >= escapeDistance;
             if (fastEnough) {
+            	if(mModel.getMediaItem(mTouchBoxIndex).getContentUri().equals(mTileView.mUri)){
+            		switchToNextImage();
+            	    mTileView.setGifPic(false);
+            	}
                 vy = Math.min(vy, maxVelocity);
                 int duration = mPositionController.flingFilmY(mTouchBoxIndex, vy);
                 if (duration >= 0) {
@@ -1352,6 +1358,7 @@ public class PhotoView extends GLView {
     }
 
     public void resume() {
+    	mTileView.isGifStream();
         mTileView.prepareTextures();
         mPositionController.skipToFinalPosition();
     }
@@ -1623,18 +1630,26 @@ public class PhotoView extends GLView {
 
     public void switchToImage(int index) {
         mModel.moveTo(index);
+        mTileView.isGifStream();
+        mTileView.decodePhoto();
     }
 
     private void switchToNextImage() {
         mModel.moveTo(mModel.getCurrentIndex() + 1);
+        mTileView.isGifStream();
+        mTileView.decodePhoto();
     }
 
     private void switchToPrevImage() {
         mModel.moveTo(mModel.getCurrentIndex() - 1);
+        mTileView.isGifStream();
+        mTileView.decodePhoto();
     }
 
     private void switchToFirstImage() {
         mModel.moveTo(0);
+        mTileView.isGifStream();
+        mTileView.decodePhoto();
     }
 
     ////////////////////////////////////////////////////////////////////////////
