@@ -335,11 +335,28 @@ public class LocalImage extends LocalMediaItem {
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
         details.addDetail(MediaDetails.INDEX_ORIENTATION, Integer.valueOf(rotation));
-        if (MIME_TYPE_JPEG.equals(mimeType)) {
+//        if (MIME_TYPE_JPEG.equals(mimeType)) {
             // ExifInterface returns incorrect values for photos in other format.
             // For example, the width and height of an webp images is always '0'.
             MediaDetails.extractExifInfo(details, filePath);
-        }
+            if (width == 0 || height == 0) {
+				try {
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inJustDecodeBounds = true;
+					BitmapFactory.decodeFile(filePath, options);
+					width = options.outWidth;
+					height = options.outHeight;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if(width > 0){
+	            MediaDetails.setWidth(details, width);
+	        }
+	        if(height > 0){
+	            MediaDetails.setHeight(details, height);
+	        }
+//        }
         return details;
     }
 
