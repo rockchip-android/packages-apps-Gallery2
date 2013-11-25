@@ -202,7 +202,12 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
                     startDefaultPage();
                 }
             } else {
-                Path itemPath = dm.findPathByUri(uri, contentType);
+//                Path itemPath = dm.findPathByUri(uri, contentType);
+            	String type = contentType;
+            	if(type.trim().equals("*/*")){
+            		type = "image/*";
+            	}
+            	Path itemPath = dm.findPathByUri(uri, type);
                 Path albumPath = dm.getDefaultSetOf(itemPath);
 
                 data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
