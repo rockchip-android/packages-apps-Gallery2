@@ -42,6 +42,7 @@ import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.android.gallery3d.app.PhotoPage;
 
 import java.util.ArrayList;
 
@@ -110,6 +111,11 @@ public class MenuExecutor {
                             listener.onProgressComplete(message.arg1);
                         }
                         mSelectionManager.leaveSelectionMode();
+                        if (message.arg2 == R.id.action_delete
+    							&& !(mActivity.getStateManager().getTopState() instanceof PhotoPage)) {
+                            	mActivity.getStateManager().pause();
+                            	mActivity.getStateManager().resume();
+                            }
                         break;
                     }
                     case MSG_TASK_UPDATE: {
@@ -161,8 +167,8 @@ public class MenuExecutor {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_TASK_START, listener));
     }
 
-    private void onProgressComplete(int result, ProgressListener listener) {
-        mHandler.sendMessage(mHandler.obtainMessage(MSG_TASK_COMPLETE, result, 0, listener));
+    private void onProgressComplete(int result, ProgressListener listener,int mOperation) {
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_TASK_COMPLETE, result, mOperation, listener));
     }
 
     public static void updateMenuOperation(Menu menu, int supported) {
@@ -443,7 +449,7 @@ public class MenuExecutor {
                 Log.e(TAG, "failed to execute operation " + mOperation
                         + " : " + th);
             } finally {
-               onProgressComplete(result, mListener);
+               onProgressComplete(result, mListener,mOperation);
             }
             return null;
         }
