@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import com.android.gallery3d.data.SnailItem;
 
 public class PhotoDataAdapter implements PhotoPage.Model {
     @SuppressWarnings("unused")
@@ -67,6 +68,8 @@ public class PhotoDataAdapter implements PhotoPage.Model {
 
     private static final int BIT_SCREEN_NAIL = 1;
     private static final int BIT_FULL_IMAGE = 2;
+    
+    private AppBridge mAppBridge;
 
     // sImageFetchSeq is the fetching sequence for images.
     // We want to fetch the current screennail first (offset = 0), the next
@@ -172,7 +175,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     // preview. If cameraIndex < 0, there is no camera preview.
     public PhotoDataAdapter(AbstractGalleryActivity activity, PhotoView view,
             MediaSet mediaSet, Path itemPath, int indexHint, int cameraIndex,
-            boolean isPanorama, boolean isStaticCamera) {
+            boolean isPanorama, boolean isStaticCamera,AppBridge tmpAppBirdge) {
         mSource = Utils.checkNotNull(mediaSet);
         mPhotoView = Utils.checkNotNull(view);
         mItemPath = Utils.checkNotNull(itemPath);
@@ -182,6 +185,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         mIsStaticCamera = isStaticCamera;
         mThreadPool = activity.getThreadPool();
         mNeedFullImage = true;
+        mAppBridge = tmpAppBirdge;
 
         Arrays.fill(mChanges, MediaObject.INVALID_DATA_VERSION);
 
@@ -706,6 +710,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
             // a Bitmap and then wrap it in a BitmapScreenNail instead.
             ScreenNail s = mItem.getScreenNail();
             if (s != null) return s;
+            if(mItem instanceof SnailItem){
+                s  = mAppBridge.attachScreenNail();
+                return s;
+            }
 
             // If this is a temporary item, don't try to get its bitmap because
             // it won't be available. We will get its bitmap after a data reload.
