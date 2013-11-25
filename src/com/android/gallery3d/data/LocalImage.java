@@ -249,9 +249,9 @@ public class LocalImage extends LocalMediaItem {
             operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
         }
 
-        if (BitmapUtils.isRotationSupported(mimeType)) {
+//        if (BitmapUtils.isRotationSupported(mimeType)) {
             operation |= SUPPORT_ROTATE;
-        }
+//        }
 
         if (GalleryUtils.isValidLocation(latitude, longitude)) {
             operation |= SUPPORT_SHOW_ON_MAP;

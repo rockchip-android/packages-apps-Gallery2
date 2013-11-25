@@ -120,17 +120,19 @@ public class GLRootView extends GLSurfaceView
         mFlags |= FLAG_INITIALIZED;
         setBackgroundDrawable(null);
         setEGLContextClientVersion(ApiHelper.HAS_GLES20_REQUIRED ? 2 : 1);
-        if (ApiHelper.USE_888_PIXEL_FORMAT) {
+        /*if (ApiHelper.USE_888_PIXEL_FORMAT) {
             setEGLConfigChooser(8, 8, 8, 0, 0, 0);
         } else {
             setEGLConfigChooser(5, 6, 5, 0, 0, 0);
-        }
+        }*/
+		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         setRenderer(this);
-        if (ApiHelper.USE_888_PIXEL_FORMAT) {
+        /*if (ApiHelper.USE_888_PIXEL_FORMAT) {
             getHolder().setFormat(PixelFormat.RGB_888);
         } else {
             getHolder().setFormat(PixelFormat.RGB_565);
-        }
+        }*/
+		getHolder().setFormat(PixelFormat.RGBA_8888);
 
         // Uncomment this to enable gl error check.
         // setDebugFlags(DEBUG_CHECK_GL_ERROR);
@@ -399,11 +401,12 @@ public class GLRootView extends GLSurfaceView
 
         mRenderRequested = false;
 
-        if ((mOrientationSource != null
+        /*if ((mOrientationSource != null
                 && mDisplayRotation != mOrientationSource.getDisplayRotation())
                 || (mFlags & FLAG_NEED_LAYOUT) != 0) {
             layoutContentPane();
-        }
+        }*/
+		if ((mFlags & FLAG_NEED_LAYOUT) != 0) layoutContentPane();
 
         mCanvas.save(GLCanvas.SAVE_FLAG_ALL);
         rotateCanvas(-mCompensation);
