@@ -717,7 +717,7 @@ public class TileImageView extends GLView {
         int n = mActiveTiles.size();
         for (int i = 0; i < n; i++) {
             Tile tile = mActiveTiles.valueAt(i);
-            if (!tile.isContentValid()) queueForDecode(tile);
+            if (tile != null && !tile.isContentValid()) queueForDecode(tile);
         }
     }
 
