@@ -272,10 +272,10 @@ public abstract class BaseFiltersManager implements FiltersManagerInterface {
                 "LUT3D_XPROCESS"
         };
 
-        FilterFxRepresentation nullFx =
-                new FilterFxRepresentation(context.getString(R.string.none),
-                        0, R.string.none);
-        mLooks.add(nullFx);
+//        FilterFxRepresentation nullFx =
+//                new FilterFxRepresentation(context.getString(R.string.none),
+//                        0, R.string.none);
+//        mLooks.add(nullFx);
 
         for (int i = 0; i < drawid.length; i++) {
             FilterFxRepresentation fx = new FilterFxRepresentation(

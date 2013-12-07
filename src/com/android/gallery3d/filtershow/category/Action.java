@@ -73,6 +73,8 @@ public class Action implements RenderingRequestCaller {
 
     public Action(FilterShowActivity context, int type) {
         mContext = context;
+        mTextSize = context.getResources().getDimensionPixelSize(
+                R.dimen.category_panel_text_size);
         setType(type);
         mContext.registerAction(this);
     }
