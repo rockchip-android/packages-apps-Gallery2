@@ -449,6 +449,9 @@ public class TileImageView extends GLView {
             int n = mActiveTiles.size();
             for (int i = 0; i < n; i++) {
                 Tile tile = mActiveTiles.valueAt(i);
+                if(tile == null){
+                	continue;
+                }
                 int level = tile.mTileLevel;
                 if (level < fromLevel || level >= endLevel
                         || !range[level - fromLevel].contains(tile.mX, tile.mY)) {
@@ -769,6 +772,9 @@ public class TileImageView extends GLView {
     }
 
     synchronized void recycleTile(Tile tile) {
+    	if(tile == null){
+    		return;
+    	}
         if (tile.mTileState == STATE_DECODING) {
             tile.mTileState = STATE_RECYCLING;
             return;
