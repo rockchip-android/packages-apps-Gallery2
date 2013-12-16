@@ -582,7 +582,7 @@ public class MasterImage implements RenderingRequestCaller {
         float translateX = 0;
         float translateY = 0;
 
-        if (applyGeometry) {
+        if (applyGeometry && mPreset != null) {
             GeometryMathUtils.GeometryHolder holder = GeometryMathUtils.unpackGeometry(
                     mPreset.getGeometryFilters());
             m = GeometryMathUtils.getCropSelectionToScreenMatrix(null, holder,
