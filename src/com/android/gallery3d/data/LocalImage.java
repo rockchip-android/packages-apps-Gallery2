@@ -244,11 +244,11 @@ public class LocalImage extends LocalMediaItem {
     @Override
     public int getSupportedOperations() {
         int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP
-                | SUPPORT_SETAS | SUPPORT_PRINT | SUPPORT_INFO;
-//        if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
-            operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
-//        }
-
+                | SUPPORT_PRINT | SUPPORT_INFO;
+        if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
+        	operation |= SUPPORT_SETAS;
+        }
+         operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
 //        if (BitmapUtils.isRotationSupported(mimeType)) {
             operation |= SUPPORT_ROTATE;
 //        }
