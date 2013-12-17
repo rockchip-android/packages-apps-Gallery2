@@ -22,6 +22,7 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -49,7 +50,9 @@ import com.android.gallery3d.filtershow.tools.SaveImage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -416,6 +419,45 @@ public class CropActivity extends Activity {
                 regenerateInputStream();
             }
         }
+        
+        public void saveMyBitmap(Bitmap mBitmap ,Uri mUri) throws Exception {
+        	String savePath = null;
+        	String[] mCols = new String[] {
+            		MediaStore.Images.Media._ID,
+            		MediaStore.Images.Media.DATA
+            };
+            Cursor cur = getApplicationContext().getContentResolver().query(mUri, mCols, null, null, null);
+            if(cur != null){
+            	if(cur.moveToFirst()){
+            		savePath = cur.getString(1);
+            	}
+            	cur.close();
+            	cur = null;
+            }
+            if(savePath == null){
+            	throw new Exception();
+            }
+            File f = new File(savePath);
+            if(!f.exists())
+            	f.createNewFile();
+            FileOutputStream fOut = null;
+            try {
+                    fOut = new FileOutputStream(f);
+            } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+            }
+            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            try {
+                    fOut.flush();
+            } catch (IOException e) {
+                    e.printStackTrace();
+            }
+            try {
+                    fOut.close();
+            } catch (IOException e) {
+                    e.printStackTrace();
+            }
+    	}
 
         @Override
         protected Boolean doInBackground(Bitmap... params) {
@@ -539,6 +581,7 @@ public class CropActivity extends Activity {
                         crop = tmp;
                     }
                 }
+                
                 // Get output compression format
                 CompressFormat cf =
                         convertExtensionToCompressFormat(getFileExtension(mOutputFormat));
@@ -548,7 +591,16 @@ public class CropActivity extends Activity {
                     if (mOutStream == null
                             || !crop.compress(cf, DEFAULT_COMPRESS_QUALITY, mOutStream)) {
                         Log.w(LOGTAG, "failed to compress bitmap to file: " + mOutUri.toString());
-                        failure = true;
+                        if(mOutStream == null){
+                        	try{
+                            	saveMyBitmap(crop,mOutUri);
+                            }catch(Exception e){
+                            	e.printStackTrace();
+                            	failure = true;
+                            }
+                        }else{
+                        	failure = true;
+                        }
                     } else {
                         mResultIntent.setData(mOutUri);
                     }
@@ -563,7 +615,16 @@ public class CropActivity extends Activity {
                             if (mOutStream == null) {
                                 Log.w(LOGTAG,
                                         "failed to compress bitmap to file: " + mOutUri.toString());
-                                failure = true;
+                                if(mOutStream == null){
+                                	try{
+                                    	saveMyBitmap(crop,mOutUri);
+                                    }catch(Exception e){
+                                    	e.printStackTrace();
+                                    	failure = true;
+                                    }
+                                }else{
+                                	failure = true;
+                                }
                             } else {
                                 try {
                                     mOutStream.write(tmpOut.toByteArray());

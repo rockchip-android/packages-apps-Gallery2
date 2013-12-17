@@ -937,7 +937,7 @@ public class TileImageView extends GLView {
 
         @Override
         protected Bitmap onGetBitmap() {
-            Utils.assertTrue(mTileState == STATE_DECODED);
+            //Utils.assertTrue(mTileState == STATE_DECODED);
 
             // We need to override the width and height, so that we won't
             // draw beyond the boundaries.
