@@ -116,7 +116,12 @@ public class MenuExecutor {
     							&& !(mActivity.getStateManager().getTopState() instanceof PhotoPage)) {
                             	mActivity.getStateManager().pause();
                             	mActivity.getStateManager().resume();
-                            }
+                        }
+                        if(message.arg2 == R.id.action_delete && mActivity.getStateManager().getTopState() 
+                                instanceof PhotoPage){
+                        	Intent intent = new Intent(PhotoPage.PHOTOPAGE_UPDATE);
+                        	mActivity.getAndroidContext().sendBroadcast(intent);
+                        }
                         break;
                     }
                     case MSG_TASK_UPDATE: {

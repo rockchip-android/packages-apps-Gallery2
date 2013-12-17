@@ -24,8 +24,10 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -189,6 +191,10 @@ public abstract class PhotoPage extends ActivityState implements
             new MyMenuVisibilityListener();
 
     private int mLastSystemUiVis = 0;
+    
+    public static final String PHOTOPAGE_UPDATE="photopage_view_update";
+    private BroadcastReceiver mSwitchReceiver;
+    private int  jumpToIndex = 0;
 
     private final PanoramaSupportCallback mUpdatePanoramaMenuItemsCallback = new PanoramaSupportCallback() {
         @Override
@@ -1010,6 +1016,20 @@ public abstract class PhotoPage extends ActivityState implements
             }
         }
     }
+    
+    private static final int MSG = 0x01;
+    private Handler mSwithHandler = new Handler(){
+    	@Override
+    	public void handleMessage(Message msg) {
+    		switch (msg.what) {
+    		case MSG:
+    			if(mPhotoView != null){
+    				mPhotoView.switchToImage(jumpToIndex);
+    			}
+    			break;
+    		}
+    	} 	
+    };
 
     @Override
     protected boolean onItemSelected(MenuItem item) {
@@ -1094,6 +1114,13 @@ public abstract class PhotoPage extends ActivityState implements
                 return true;
             }
             case R.id.action_delete:
+            	if(mModel instanceof PhotoDataAdapter){
+                    if(mModel.getCurrentIndex() == ((PhotoDataAdapter)mModel).getSize()-1){
+                       jumpToIndex = mModel.getCurrentIndex()-1;
+                    }else{
+                       jumpToIndex = mModel.getCurrentIndex();
+                    }
+                }
                 confirmMsg = mActivity.getResources().getQuantityString(
                         R.plurals.delete_selection, 1);
             case R.id.action_setas:
@@ -1323,7 +1350,7 @@ public abstract class PhotoPage extends ActivityState implements
     public void onPause() {
         super.onPause();
         mIsActive = false;
-
+        mActivity.getAndroidContext().unregisterReceiver(mSwitchReceiver);
         mActivity.getGLRoot().unfreeze();
         mHandler.removeMessages(MSG_UNFREEZE_GLROOT);
 
@@ -1447,6 +1474,18 @@ public abstract class PhotoPage extends ActivityState implements
 
         mRecenterCameraOnResume = true;
         mHandler.sendEmptyMessageDelayed(MSG_UNFREEZE_GLROOT, UNFREEZE_GLROOT_TIMEOUT);
+		IntentFilter intentFilter = new IntentFilter(PHOTOPAGE_UPDATE);
+		if (mSwitchReceiver == null) {
+			mSwitchReceiver = new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context arg0, Intent arg1) {
+					mSwithHandler.removeMessages(MSG);
+					mSwithHandler.sendEmptyMessageDelayed(MSG, 50);
+				}
+			};
+		}
+		mActivity.getAndroidContext().registerReceiver(mSwitchReceiver,
+				intentFilter);
     }
 
     @Override

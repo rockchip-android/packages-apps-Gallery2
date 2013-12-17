@@ -167,6 +167,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
 
     private final SourceListener mSourceListener = new SourceListener();
     private final TiledTexture.Uploader mUploader;
+    
+    public int getSize() {
+    	return mSize;
+    }
 
     // The path of the current viewing item will be stored in mItemPath.
     // If mItemPath is not null, mCurrentIndex is only a hint for where we
