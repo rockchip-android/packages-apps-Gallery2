@@ -402,6 +402,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     }
 
     private void updateCurrentIndex(int index) {
+    	int m = index % DATA_CACHE_SIZE;
+    	if(m < 0 || m >= mData.length){
+    		return;
+    	}
         if (mCurrentIndex == index) return;
         mCurrentIndex = index;
         updateSlidingWindow();
