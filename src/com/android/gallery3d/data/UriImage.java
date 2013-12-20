@@ -32,6 +32,7 @@ import com.android.gallery3d.data.MediaItem.BitmapInfo;
 import com.android.gallery3d.util.ThreadPool.CancelListener;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.android.gif.GifTextrue;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -216,11 +217,12 @@ public class UriImage extends MediaItem {
 
     @Override
     public int getSupportedOperations() {
-        int supported = SUPPORT_PRINT | SUPPORT_SETAS;
+        int supported = SUPPORT_PRINT  | SUPPORT_INFO;
         if (isSharable()) supported |= SUPPORT_SHARE;
         if (BitmapUtils.isSupportedByRegionDecoder(mContentType)) {
-            supported |= SUPPORT_EDIT | SUPPORT_FULL_IMAGE;
+            supported |= SUPPORT_FULL_IMAGE | SUPPORT_SETAS;
         }
+  		supported |= SUPPORT_EDIT;
         return supported;
     }
 

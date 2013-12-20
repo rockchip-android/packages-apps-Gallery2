@@ -17,11 +17,13 @@
 package com.android.gallery3d.data;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
+import android.net.Uri;
 import android.os.Build;
 import android.util.FloatMath;
 
@@ -35,6 +37,7 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class DecodeUtils {
@@ -309,4 +312,18 @@ public class DecodeUtils {
         decodeBounds(jc, fileDescriptor, options);
         return GalleryBitmapPool.getInstance().get(options.outWidth, options.outHeight);
     }
+    
+    public static InputStream getInputStream(Context c, String uri) {
+		if (uri == null) {
+			return null;
+		}
+		try {
+			return c.getContentResolver().openInputStream(Uri.parse(uri));
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+			return null;
+		}
+
+	}
 }

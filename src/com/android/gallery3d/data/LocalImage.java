@@ -19,6 +19,7 @@ package com.android.gallery3d.data;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -44,10 +45,12 @@ import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.android.gallery3d.util.UpdateHelper;
+import com.android.gif.GifTextrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
@@ -243,12 +246,16 @@ public class LocalImage extends LocalMediaItem {
 
     @Override
     public int getSupportedOperations() {
-        int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP
+    	int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP
                 | SUPPORT_PRINT | SUPPORT_INFO;
         if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
         	operation |= SUPPORT_SETAS;
         }
-         operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
+        InputStream is = DecodeUtils.getInputStream(mApplication.getAndroidContext(), getContentUri().toString());
+  		if (!GifTextrue.isGifStream(is)) {
+  			operation |= SUPPORT_EDIT;
+  		}
+         operation |= SUPPORT_FULL_IMAGE;
 //        if (BitmapUtils.isRotationSupported(mimeType)) {
             operation |= SUPPORT_ROTATE;
 //        }
