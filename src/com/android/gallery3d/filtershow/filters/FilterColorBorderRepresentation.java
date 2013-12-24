@@ -25,6 +25,7 @@ import com.android.gallery3d.filtershow.controller.BasicParameterInt;
 import com.android.gallery3d.filtershow.controller.Parameter;
 import com.android.gallery3d.filtershow.controller.ParameterColor;
 import com.android.gallery3d.filtershow.editors.EditorColorBorder;
+import com.android.gallery3d.filtershow.editors.ImageOnlyEditor;
 
 import java.io.IOException;
 
@@ -50,13 +51,36 @@ public class FilterColorBorderRepresentation extends FilterRepresentation {
             mParamColor
     };
     private int mPramMode;
+    
+    public FilterColorBorderRepresentation(int color, int size, int radius,int editTp) {
+    	super("ColorBorder");
+    	setSerializationName(SERIALIZATION_NAME);
+        setFilterType(FilterRepresentation.TYPE_BORDER);
+        setTextId(R.string.borders);
+        if(editTp == FilterColorBorderRepresentation.TYPE_USE_EDITORCOLORBORDER){
+        	setEditorId(EditorColorBorder.ID);
+        }else{
+        	setEditorId(ImageOnlyEditor.ID);
+        }
+        setShowParameterValue(false);
+        setFilterClass(ImageFilterColorBorder.class);
+        mParamColor.setValue(color);
+        mParamSize.setValue(size);
+        mParamRadius.setValue(radius);
+        mParamColor.setColorpalette(new int[]{
+                DEFAULT_MENU_COLOR1,
+                DEFAULT_MENU_COLOR2,
+                DEFAULT_MENU_COLOR3,
+                DEFAULT_MENU_COLOR4,
+                DEFAULT_MENU_COLOR5});
+    }
 
     public FilterColorBorderRepresentation(int color, int size, int radius) {
         super("ColorBorder");
         setSerializationName(SERIALIZATION_NAME);
         setFilterType(FilterRepresentation.TYPE_BORDER);
         setTextId(R.string.borders);
-        setEditorId(EditorColorBorder.ID);
+        setEditorId(ImageOnlyEditor.ID);
         setShowParameterValue(false);
         setFilterClass(ImageFilterColorBorder.class);
         mParamColor.setValue(color);

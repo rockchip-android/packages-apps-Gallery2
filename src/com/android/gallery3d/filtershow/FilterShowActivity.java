@@ -572,7 +572,10 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
         }
         mCategoryBordersAdapter = new CategoryAdapter(this);
         for (FilterRepresentation representation : borders) {
-            if (representation.getTextId() != 0) {
+        	String name = representation.getSerializationName();
+        	if(name != null && !name.trim().equals("")){
+        		representation.setName(name);
+        	}else if (representation.getTextId() != 0) {
                 representation.setName(getString(representation.getTextId()));
             }
             mCategoryBordersAdapter.add(new Action(this, representation, Action.FULL_VIEW));

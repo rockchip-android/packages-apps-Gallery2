@@ -177,7 +177,8 @@ public abstract class BaseFiltersManager implements FiltersManagerInterface {
                 "FRAME_WHITE",
                 "FRAME_WHITE_ROUNDED",
                 "FRAME_CREAM",
-                "FRAME_CREAM_ROUNDED"
+                "FRAME_CREAM_ROUNDED",
+                "CUSTOM"
         };
 
         // The "no border" implementation
@@ -224,6 +225,9 @@ public abstract class BaseFiltersManager implements FiltersManagerInterface {
 
         rep = new FilterColorBorderRepresentation(creamColor, mImageBorderSize,
                 mImageBorderSize);
+        borderList.add(rep);
+        
+        rep = new FilterColorBorderRepresentation(creamColor, mImageBorderSize, 0,FilterRepresentation.TYPE_USE_EDITORCOLORBORDER);
         borderList.add(rep);
 
         for (FilterRepresentation filter : borderList) {

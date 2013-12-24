@@ -48,6 +48,10 @@ public class FilterRepresentation {
     public static final byte TYPE_TINYPLANET = 6;
     public static final byte TYPE_GEOMETRY = 7;
     protected static final String NAME_TAG = "Name";
+    
+    public static final int TYPE_USE_EDITORCOLORBORDER = 1;
+    public static final int TYPE_USE_IMAGEONLYEDITOR = 2;
+    protected int editorType = TYPE_USE_IMAGEONLYEDITOR;
 
     public FilterRepresentation(String name) {
         mName = name;
