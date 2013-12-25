@@ -312,18 +312,4 @@ public class DecodeUtils {
         decodeBounds(jc, fileDescriptor, options);
         return GalleryBitmapPool.getInstance().get(options.outWidth, options.outHeight);
     }
-    
-    public static InputStream getInputStream(Context c, String uri) {
-		if (uri == null) {
-			return null;
-		}
-		try {
-			return c.getContentResolver().openInputStream(Uri.parse(uri));
-		} catch (FileNotFoundException e) {
-
-			e.printStackTrace();
-			return null;
-		}
-
-	}
 }
