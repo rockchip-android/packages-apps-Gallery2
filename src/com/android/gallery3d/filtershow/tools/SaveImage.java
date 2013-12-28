@@ -259,6 +259,8 @@ public class SaveImage {
             } finally {
                 Utils.closeSilently(inStream);
             }
+        }else{
+        	return null;
         }
         return exif;
     }
@@ -356,8 +358,10 @@ public class SaveImage {
                 Object xmp = getPanoramaXMPData(newSourceUri, preset);
                 ExifInterface exif = getExifData(newSourceUri);
                 long time = System.currentTimeMillis();
-                updateExifData(exif, time);
-                if (putExifData(mDestinationFile, exif, mPreviewImage, quality)) {
+                if(exif != null){
+                	updateExifData(exif, time);
+                }
+                if (exif == null || putExifData(mDestinationFile, exif, mPreviewImage, quality)) {
                     putPanoramaXMPData(mDestinationFile, xmp);
                     ContentValues values = getContentValues(mContext, mSelectedImageUri, mDestinationFile, time);
                     Object result = mContext.getContentResolver().insert(
@@ -368,9 +372,11 @@ public class SaveImage {
                 Object xmp = getPanoramaXMPData(newSourceUri, preset);
                 ExifInterface exif = getExifData(newSourceUri);
                 long time = System.currentTimeMillis();
-                updateExifData(exif, time);
+                if(exif != null){
+                	updateExifData(exif, time);
+                }
                 // If we succeed in writing the bitmap as a jpeg, return a uri.
-                if (putExifData(mDestinationFile, exif, mPreviewImage, quality)) {
+                if (exif == null || putExifData(mDestinationFile, exif, mPreviewImage, quality)) {
                     putPanoramaXMPData(mDestinationFile, xmp);
                     // mDestinationFile will save the newSourceUri info in the XMP.
                     if (!flatten) {
@@ -420,11 +426,13 @@ public class SaveImage {
                 long time = System.currentTimeMillis();
                 updateProgress();
 
-                updateExifData(exif, time);
+                if(exif != null){
+                	updateExifData(exif, time);
+                }
                 updateProgress();
 
                 // If we succeed in writing the bitmap as a jpeg, return a uri.
-                if (putExifData(mDestinationFile, exif, bitmap, quality)) {
+                if (exif == null || putExifData(mDestinationFile, exif, bitmap, quality)) {
                     putPanoramaXMPData(mDestinationFile, xmp);
                     // mDestinationFile will save the newSourceUri info in the XMP.
                     if (!flatten) {

@@ -658,6 +658,9 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
     }
 
     public void showRepresentation(FilterRepresentation representation) {
+    	if(mLoadingVisible){
+    		return;
+    	}
         if (representation == null) {
             return;
         }
