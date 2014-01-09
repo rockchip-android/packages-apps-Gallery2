@@ -575,7 +575,9 @@ public class TileImageView extends GLView {
         int n = mActiveTiles.size();
         for (int i = 0; i < n; i++) {
             Tile texture = mActiveTiles.valueAt(i);
-            texture.recycle();
+            if(texture != null){
+            	texture.recycle();
+            }
         }
         mActiveTiles.clear();
         mTileRange.set(0, 0, 0, 0);
