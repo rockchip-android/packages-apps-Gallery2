@@ -1350,7 +1350,11 @@ public abstract class PhotoPage extends ActivityState implements
     public void onPause() {
         super.onPause();
         mIsActive = false;
-        mActivity.getAndroidContext().unregisterReceiver(mSwitchReceiver);
+        try{
+        	mActivity.getAndroidContext().unregisterReceiver(mSwitchReceiver);
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
         mActivity.getGLRoot().unfreeze();
         mHandler.removeMessages(MSG_UNFREEZE_GLROOT);
 
