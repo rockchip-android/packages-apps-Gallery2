@@ -197,6 +197,9 @@ public abstract class UploadedTexture extends BasicTexture {
             uploadToCanvas(canvas);
         } else if (!mContentValid) {
             Bitmap bitmap = getBitmap();
+            if(bitmap == null){
+            	return;
+            }
             int format = GLUtils.getInternalFormat(bitmap);
             int type = GLUtils.getType(bitmap);
             canvas.texSubImage2D(this, mBorder, mBorder, bitmap, format, type);
