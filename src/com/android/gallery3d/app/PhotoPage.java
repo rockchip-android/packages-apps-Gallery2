@@ -522,6 +522,7 @@ public abstract class PhotoPage extends ActivityState implements
                     }
                     // Reset the timeout for the bars after a swipe
                     refreshHidingMessage();
+                    mPhotoView.updateCurrentIndex();
                 }
 
                 @Override

@@ -1362,6 +1362,10 @@ public class PhotoView extends GLView {
         mTileView.prepareTextures();
         mPositionController.skipToFinalPosition();
     }
+    
+    public void updateCurrentIndex(){
+    	mTileView.isGifStream();
+    }
 
     // move to the camera preview and show controls after resume
     public void resetToFirstPicture() {
