@@ -247,7 +247,7 @@ public class SaveImage {
         if (mimeType == null) {
             mimeType = ImageLoader.getMimeType(mSelectedImageUri);
         }
-        if (mimeType.equals(ImageLoader.JPEG_MIME_TYPE)) {
+//        if (mimeType.equals(ImageLoader.JPEG_MIME_TYPE)) {
             InputStream inStream = null;
             try {
                 inStream = mContext.getContentResolver().openInputStream(source);
@@ -259,9 +259,9 @@ public class SaveImage {
             } finally {
                 Utils.closeSilently(inStream);
             }
-        }else{
-        	return null;
-        }
+//        }else{
+//        	return null;
+//        }
         return exif;
     }
 
