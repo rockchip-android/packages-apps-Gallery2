@@ -9,10 +9,13 @@ import java.io.InputStream;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.HandlerThread;
+import android.os.SystemProperties;
+//import android.os.*;
 import android.util.Log;
-
 public class GifDecoder extends Thread {
-
+	private static final boolean SupportBitmapRGB565 = 
+				SystemProperties.getBoolean("ro.Gallery2.RGB565",false);
+        //property_get("ro.Gallery2.RGB565",SupportBitmapRGB565,0);
 	private static final int MaxStackSize = 4096;
 	// max decoder pixel stack size
 
@@ -746,7 +749,12 @@ public class GifDecoder extends Thread {
              //rockchips zhongming modify for [Image Distortion]  2010-12-9										
 		//image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
 		try{
-		    image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
+		    if(SupportBitmapRGB565){
+		        image = Bitmap.createBitmap(dest, width, height, Config.RGB_565);
+                    }
+		    else{
+	                image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
+                    }
 		}catch(OutOfMemoryError e){
 			System.gc();
 		}
