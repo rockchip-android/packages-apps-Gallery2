@@ -215,76 +215,84 @@ public class TileImageView extends GLView {
   		return mUri;	
   	}
 
-  	public void isGifStream() {
-  		mDecodeUri = null;
-                  isBMPPic = false;
+  	public void isGifStream(boolean mFilmMode) {
   		synchronized (obj) {
-  		if(!(mModel instanceof PhotoPage.Model)){
-  			isGifPic = false;
-  			return;
-  		}
-  		MediaItem item = ((PhotoPage.Model) mModel).getCurrentMediaItem();
-  		if(item == null){
-  			isGifPic = false;
-  			isReload = true;
-  			return;
-  		}
-  		isReload = false;
-  		Uri uri = null;
-  		try{
-  			uri = getTrueUri(mContext, item.getContentUri());
-  		}catch (Exception e) {
-  			isGifPic = false;
-  			return;
-  		}
-  		/*if(mUri != null  && mUri.equals(uri)){
-  			return;
-  		}*/
-  		mUri = uri;
-  		String mimeType = item.getMimeType();
-  		if(mimeType != null && mimeType.startsWith("image/")){
-  			if(mTask != null){
-  				mTask.cancel();
+  			if(!(mModel instanceof PhotoPage.Model)){
+  				return;
   			}
-  			isBMPPic = true;
-  			mTask = mThreadPool.submit(
-  					item.requestDecodeImage(MediaItem.TYPE_DECODE,mUri),
-                      mListener);
-  		}else{
-  			isBMPPic = false;
-  		}
-  		String str = uri != null ? uri.toString():null;
-  		InputStream is = getInputStream(mContext, str);
-  		if (GifTextrue.isGifStream(is)) {
-  			isGifPic = true;
-  			Cursor c = mContext.getContentResolver().query(uri,
-  					new String[] { ImageColumns.DATA }, null, null, null);
-  			if (c != null) {
-  				c.moveToFirst();
-  				filePath = c.getString(0);
-  				if(filePath == null){
-  					 isGifPic = false;
-  					 return;
+  			MediaItem item = ((PhotoPage.Model) mModel).getCurrentMediaItem();
+  			if(item == null){
+  				isReload = true;
+  				return;
+  			}
+  			Uri uri = null;
+  			String mimeType = item.getMimeType();
+  			try{
+  				uri = getTrueUri(mContext, item.getContentUri());
+  			}catch (Exception e) {
+  				return;
+  			}
+  			mUri = uri;
+  			String str = uri != null ? uri.toString():null;
+  			boolean isGif = mimeType.toLowerCase().endsWith("gif");
+//  			if(!isGif && isChangeFilmMode){
+//  				return;
+//  			}else{
+  				mDecodeUri = null;
+  		  		isGifPic = false;
+  		        isBMPPic = false;
+  				isReload = false;
+//  			}
+  			if (isGif) {
+  				InputStream is = null;
+  				boolean flag = false;
+  				if(!mFilmMode){
+  					is = getInputStream(mContext, str);
+  					flag = GifTextrue.isGifStream(is);
   				}
-  				GifTextrueFactory.startOnly(new GifTextrue(this, null,
-  						filePath));
-  				c.close();
-  				c = null;
-  			}else{
-  				if(filePath == null){
-  					String temp = uri.toString();
-  					if(temp != null && temp.startsWith("file://")){
-  						filePath = temp.substring(7);
+  				if(flag){
+  					isGifPic = true;
+  					Cursor c = mContext.getContentResolver().query(uri,
+  							new String[] { ImageColumns.DATA }, null, null, null);
+  					if (c != null) {
+  						c.moveToFirst();
+  						filePath = c.getString(0);
+  						if(filePath == null){
+  							isGifPic = false;
+  							return;
+  						}
+  						GifTextrueFactory.startOnly(new GifTextrue(this, null,
+  								filePath));
+  						c.close();
+  						c = null;
   					}else{
-  					    isGifPic = false;
-  					    return;
+  						if(filePath == null){
+  							String temp = uri.toString();
+  							if(temp != null && temp.startsWith("file://")){
+  								filePath = temp.substring(7);
+  							}else{
+  								isGifPic = false;
+  								return;
+  							}
+  						}
   					}
+  				}else{
+  					GifTextrueFactory.freezeAllGif();
+  	  				isGifPic = false;
   				}
+  			} else {
+  	  			if(!mFilmMode && mimeType != null && mimeType.startsWith("image/")){
+  	  				if(mTask != null){
+  	  					mTask.cancel();
+  	  				}
+  	  				isBMPPic = true;
+  	  				mTask = mThreadPool.submit(
+  	  					item.requestDecodeImage(MediaItem.TYPE_DECODE,mUri),
+  	                      mListener);
+  	  			}else{
+  	  				isBMPPic = false;
+  	  			}
   			}
-  		} else {
-  			GifTextrueFactory.freezeAllGif();
-  			isGifPic = false;
-  		}
   		}
   	}
   	
@@ -357,6 +365,11 @@ public class TileImageView extends GLView {
                 sTileSize = 256;
             }
         }
+    }
+    
+    PhotoView mPhotoView = null;
+    public void setPhoteView(PhotoView photoView){
+    	mPhotoView = photoView;
     }
 
     public void setModel(TileSource model) {
@@ -609,7 +622,11 @@ public class TileImageView extends GLView {
     @Override
     protected void render(GLCanvas canvas) {
     	if(isReload && ((PhotoPage.Model) mModel).getCurrentMediaItem() != null){
-    		isGifStream();
+    		if(mPhotoView != null){
+    			isGifStream(mPhotoView.getFilmMode());
+    		}else{
+    			isGifStream(true);
+    		}
     		isReload = false;
     	}
         mUploadQuota = UPLOAD_LIMIT;
@@ -675,30 +692,30 @@ public class TileImageView extends GLView {
             }
 		}else{
 			try {
-				if (level != mLevelCount && !isScreenNailAnimating()) {
-					if (mScreenNail != null) {
-						mScreenNail.noDraw();
-					}
-
-					int size = (sTileSize << level);
-					float length = size * mScale;
-					Rect r = mTileRange;
-
-					for (int ty = r.top, i = 0; ty < r.bottom; ty += size, i++) {
-						float y = mOffsetY + i * length;
-						for (int tx = r.left, j = 0; tx < r.right; tx += size, j++) {
-							float x = mOffsetX + j * length;
-							drawTile(canvas, tx, ty, level, x, y, length);
-						}
-					}
-				} else if (mScreenNail != null) {
+//				if (level != mLevelCount && !isScreenNailAnimating()) {
+//					if (mScreenNail != null) {
+//						mScreenNail.noDraw();
+//					}
+//
+//					int size = (sTileSize << level);
+//					float length = size * mScale;
+//					Rect r = mTileRange;
+//
+//					for (int ty = r.top, i = 0; ty < r.bottom; ty += size, i++) {
+//						float y = mOffsetY + i * length;
+//						for (int tx = r.left, j = 0; tx < r.right; tx += size, j++) {
+//							float x = mOffsetX + j * length;
+//							drawTile(canvas, tx, ty, level, x, y, length);
+//						}
+//					}
+//				} else if (mScreenNail != null) {
 					mScreenNail.draw(canvas, mOffsetX, mOffsetY,
 							Math.round(mImageWidth * mScale),
 							Math.round(mImageHeight * mScale));
 					if (isScreenNailAnimating()) {
 						invalidate();
 					}
-				}
+//				}
 			} finally {
 				if (flags != 0)
 					canvas.restore();

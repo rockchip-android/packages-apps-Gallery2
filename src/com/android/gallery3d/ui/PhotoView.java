@@ -245,6 +245,7 @@ public class PhotoView extends GLView {
 
     public PhotoView(AbstractGalleryActivity activity) {
         mTileView = new TileImageView(activity);
+        mTileView.setPhoteView(this);
         addComponent(mTileView);
         mContext = activity.getAndroidContext();
         mPlaceholderColor = mContext.getResources().getColor(
@@ -505,7 +506,7 @@ public class PhotoView extends GLView {
         }
 
         updateCameraRect();
-        mTileView.isGifStream();
+        mTileView.isGifStream(mFilmMode);
         mTileView.decodePhoto();
         mPositionController.setConstrainedFrame(mCameraRect);
         if (changeSize) {
@@ -1332,6 +1333,7 @@ public class PhotoView extends GLView {
     public void setFilmMode(boolean enabled) {
         if (mFilmMode == enabled) return;
         mFilmMode = enabled;
+        mTileView.isGifStream(mFilmMode);
         mPositionController.setFilmMode(mFilmMode);
         mModel.setNeedFullImage(!enabled);
         mModel.setFocusHintDirection(
@@ -1358,13 +1360,13 @@ public class PhotoView extends GLView {
     }
 
     public void resume() {
-    	mTileView.isGifStream();
+    	mTileView.isGifStream(mFilmMode);
         mTileView.prepareTextures();
         mPositionController.skipToFinalPosition();
     }
     
     public void updateCurrentIndex(){
-    	mTileView.isGifStream();
+    	mTileView.isGifStream(mFilmMode);
     }
 
     // move to the camera preview and show controls after resume
@@ -1634,25 +1636,25 @@ public class PhotoView extends GLView {
 
     public void switchToImage(int index) {
         mModel.moveTo(index);
-        mTileView.isGifStream();
+        mTileView.isGifStream(mFilmMode);
         mTileView.decodePhoto();
     }
 
     private void switchToNextImage() {
         mModel.moveTo(mModel.getCurrentIndex() + 1);
-        mTileView.isGifStream();
+        mTileView.isGifStream(mFilmMode);
         mTileView.decodePhoto();
     }
 
     private void switchToPrevImage() {
         mModel.moveTo(mModel.getCurrentIndex() - 1);
-        mTileView.isGifStream();
+        mTileView.isGifStream(mFilmMode);
         mTileView.decodePhoto();
     }
 
     private void switchToFirstImage() {
         mModel.moveTo(0);
-        mTileView.isGifStream();
+        mTileView.isGifStream(mFilmMode);
         mTileView.decodePhoto();
     }
 
