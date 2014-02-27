@@ -84,3 +84,6 @@
 -keep class com.android.gallery3d.jpegstream.JPEGOutputStream { *; }
 -keep class com.android.gallery3d.jpegstream.JPEGInputStream { *; }
 -keep class com.android.gallery3d.jpegstream.StreamUtils { *; }
+-dontwarn android.util.** 
+-keep class android.util.** { *;}
+
