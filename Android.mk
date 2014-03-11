@@ -28,7 +28,7 @@ LOCAL_RESOURCE_DIR += $(LOCAL_PATH)/res
 LOCAL_AAPT_FLAGS := --auto-add-overlay
 
 LOCAL_PACKAGE_NAME := Gallery2
-
+LOCAL_CERTIFICATE := platform
 LOCAL_OVERRIDES_PACKAGES := Gallery Gallery3D GalleryNew3D
 
 #LOCAL_SDK_VERSION := current
