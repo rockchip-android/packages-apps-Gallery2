@@ -692,30 +692,30 @@ public class TileImageView extends GLView {
             }
 		}else{
 			try {
-//				if (level != mLevelCount && !isScreenNailAnimating()) {
-//					if (mScreenNail != null) {
-//						mScreenNail.noDraw();
-//					}
-//
-//					int size = (sTileSize << level);
-//					float length = size * mScale;
-//					Rect r = mTileRange;
-//
-//					for (int ty = r.top, i = 0; ty < r.bottom; ty += size, i++) {
-//						float y = mOffsetY + i * length;
-//						for (int tx = r.left, j = 0; tx < r.right; tx += size, j++) {
-//							float x = mOffsetX + j * length;
-//							drawTile(canvas, tx, ty, level, x, y, length);
-//						}
-//					}
-//				} else if (mScreenNail != null) {
+				if (level != mLevelCount && !isScreenNailAnimating()) {
+					if (mScreenNail != null) {
+						mScreenNail.noDraw();
+					}
+
+					int size = (sTileSize << level);
+					float length = size * mScale;
+					Rect r = mTileRange;
+
+					for (int ty = r.top, i = 0; ty < r.bottom; ty += size, i++) {
+						float y = mOffsetY + i * length;
+						for (int tx = r.left, j = 0; tx < r.right; tx += size, j++) {
+							float x = mOffsetX + j * length;
+							drawTile(canvas, tx, ty, level, x, y, length);
+						}
+					}
+				} else if (mScreenNail != null) {
 					mScreenNail.draw(canvas, mOffsetX, mOffsetY,
 							Math.round(mImageWidth * mScale),
 							Math.round(mImageHeight * mScale));
 					if (isScreenNailAnimating()) {
 						invalidate();
 					}
-//				}
+				}
 			} finally {
 				if (flags != 0)
 					canvas.restore();
