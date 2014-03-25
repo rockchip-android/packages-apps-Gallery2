@@ -429,7 +429,7 @@ public class TileImageView extends GLView {
         // We want to keep one more tile level as texture in addition to what
         // we use for display. So it can be faster when the scale moves to the
         // next level. We choose a level closer to the current scale.
-        if (mLevel != mLevelCount && !(mModel instanceof PhotoPage.Model)) {
+        if (mLevel != mLevelCount) {
             Rect range = mTileRange;
             getRange(range, centerX, centerY, mLevel, scale, rotation);
             mOffsetX = Math.round(width / 2f + (range.left - centerX) * scale);
