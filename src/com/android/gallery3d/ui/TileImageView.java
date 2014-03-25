@@ -281,7 +281,8 @@ public class TileImageView extends GLView {
   	  				isGifPic = false;
   				}
   			} else {
-  	  			if(!mFilmMode && mimeType != null && mimeType.startsWith("image/")){
+  	  			if(!mFilmMode && mimeType != null && mimeType.startsWith("image/")
+  	  					&& mimeType.endsWith("bmp")){
   	  				if(mTask != null){
   	  					mTask.cancel();
   	  				}
