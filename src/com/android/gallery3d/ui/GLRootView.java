@@ -60,7 +60,7 @@ import javax.microedition.khronos.opengles.GL11;
 // (2) The public methods of CameraHeadUpDisplay
 // (3) The overridden methods in GLRootView.
 public class GLRootView extends GLSurfaceView
-        implements GLSurfaceView.Renderer, GLRoot {
+        implements GLSurfaceView.Renderer, GLRoot, View.OnGenericMotionListener {
     private static final String TAG = "GLRootView";
 
     private static final boolean DEBUG_FPS = false;
@@ -136,6 +136,8 @@ public class GLRootView extends GLSurfaceView
 
         // Uncomment this to enable gl error check.
         // setDebugFlags(DEBUG_CHECK_GL_ERROR);
+
+        setOnGenericMotionListener(this);
     }
 
     @Override
@@ -460,9 +462,15 @@ public class GLRootView extends GLSurfaceView
     }
 
     @Override
+    public boolean onGenericMotion(View v, MotionEvent event) {
+        if (!isEnabled()) return false;
+        mContentView.dispatchGenericMotion(v,event);
+        return false;
+    }
+
+    @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (!isEnabled()) return false;
-
         int action = event.getAction();
         if (action == MotionEvent.ACTION_CANCEL
                 || action == MotionEvent.ACTION_UP) {

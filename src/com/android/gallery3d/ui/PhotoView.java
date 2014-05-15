@@ -24,7 +24,9 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Message;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.animation.AccelerateInterpolator;
 
@@ -43,6 +45,8 @@ import com.android.gallery3d.glrenderer.Texture;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.RangeArray;
 import com.android.gallery3d.util.UsageStatistics;
+
+import java.lang.Throwable;
 
 public class PhotoView extends GLView {
     @SuppressWarnings("unused")
@@ -943,6 +947,24 @@ public class PhotoView extends GLView {
     @Override
     protected boolean onTouch(MotionEvent event) {
         mGestureRecognizer.onTouchEvent(event);
+        return true;
+    }
+
+    @Override
+    protected boolean onGenericMotion(View v, MotionEvent event) {
+        if (mPictures.get(0).isCamera()) return false;
+        if (event.getAction() != MotionEvent.ACTION_SCROLL) return false;
+        float scrollvalue = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+
+        PositionController controller = mPositionController;
+        float scale = controller.getImageScale();
+
+        if (scrollvalue > 0 && scale < 4.0f){
+            controller.zoomIn(event.getX(), event.getY(), Math.min(4.0f, scale * 1.5f));
+        } else if(scrollvalue < 0 && scale > 1.0f ){
+            controller.zoomIn(event.getX(), event.getY(), Math.max(1.0f, scale * 0.5f));
+        }
+
         return true;
     }
 

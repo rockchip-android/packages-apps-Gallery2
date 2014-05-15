@@ -134,7 +134,6 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
 
     private String mAction = "";
     MasterImage mMasterImage = null;
-
     private static final long LIMIT_SUPPORTS_HIGHRES = 134217728; // 128Mb
 
     public static final String TINY_PLANET_ACTION = "com.android.camera.action.TINY_PLANET";
@@ -273,7 +272,6 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         boolean onlyUsePortrait = getResources().getBoolean(R.bool.only_use_portrait);
         if (onlyUsePortrait) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -347,20 +345,26 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
 
     private void loadXML() {
         setContentView(R.layout.filtershow_activity);
-
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.filtershow_actionbar);
-        actionBar.setBackgroundDrawable(new ColorDrawable(
-                getResources().getColor(R.color.background_screen)));
+		if(actionBar!=	null)
+		{
+	        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+	        actionBar.setCustomView(R.layout.filtershow_actionbar);
+	        actionBar.setBackgroundDrawable(new ColorDrawable(
+	                getResources().getColor(R.color.background_screen)));
 
-        mSaveButton = actionBar.getCustomView();
-        mSaveButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveImage();
-            }
-        });
+	        mSaveButton = actionBar.getCustomView();
+	        mSaveButton.setOnClickListener(new OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	                saveImage();
+	            }
+	        });
+		}
+		else
+		{
+			Log.d(LOGTAG,"actionBar is NULL...");
+		}
 
         mImageShow = (ImageShow) findViewById(R.id.imageShow);
         mImageViews.add(mImageShow);
