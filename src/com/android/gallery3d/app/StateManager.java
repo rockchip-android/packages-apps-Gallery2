@@ -255,6 +255,8 @@ public class StateManager {
 
     public void destroy() {
         Log.v(TAG, "destroy");
+        Intent intent = new Intent("widget_update");
+        mActivity.getAndroidContext().sendBroadcast(intent);
         while (!mStack.isEmpty()) {
             mStack.pop().activityState.onDestroy();
         }
@@ -295,6 +297,8 @@ public class StateManager {
     public void saveState(Bundle outState) {
         Log.v(TAG, "saveState");
 
+        Intent intent = new Intent("widget_update");
+        mActivity.getAndroidContext().sendBroadcast(intent);
         Parcelable list[] = new Parcelable[mStack.size()];
         int i = 0;
         for (StateEntry entry : mStack) {

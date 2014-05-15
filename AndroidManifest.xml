@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest android:versionCode="40030"
-        android:versionName="1.1.40032-20140325"
+        android:versionName="1.1.40032-20140424"
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.android.gallery3d">
 
@@ -326,6 +326,7 @@
                 android:label="@string/appwidget_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="widget_update" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                     android:resource="@xml/widget_info" />
