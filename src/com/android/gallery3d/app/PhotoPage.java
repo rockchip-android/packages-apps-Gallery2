@@ -402,8 +402,9 @@ public abstract class PhotoPage extends ActivityState implements
                     null;
         mTreatBackAsUp = data.getBoolean(KEY_TREAT_BACK_AS_UP, false);
         mStartInFilmstrip = data.getBoolean(KEY_START_IN_FILMSTRIP, false);
-        boolean inCameraRoll = data.getBoolean(KEY_IN_CAMERA_ROLL, false);
-        mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
+        //boolean inCameraRoll = data.getBoolean(KEY_IN_CAMERA_ROLL, false);
+        boolean inCameraRoll = false;
+	mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
         if (mSetPathString != null) {
             mShowSpinner = true;
             mAppBridge = (AppBridge) data.getParcelable(KEY_APP_BRIDGE);
