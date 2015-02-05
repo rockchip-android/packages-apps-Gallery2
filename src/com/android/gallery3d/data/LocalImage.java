@@ -251,7 +251,7 @@ public class LocalImage extends LocalMediaItem {
         if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
         	operation |= SUPPORT_SETAS;
         }
-  		if (mimeType != null && mimeType.toLowerCase().indexOf("gif") == -1) {//gif图片不允许有编辑功能
+  		if (mimeType != null && mimeType.toLowerCase().indexOf("gif") == -1) {
   			operation |= SUPPORT_EDIT;
   		}
          operation |= SUPPORT_FULL_IMAGE;
