@@ -293,6 +293,6 @@ public class MainPanel extends Fragment {
         }
         mCurrentSelected = -1;
         showPanel(currentPanel);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 }
