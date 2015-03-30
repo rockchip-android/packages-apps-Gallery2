@@ -1,4 +1,5 @@
 /*
+ * $_FOR_ROCKCHIP_RBOX_$
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -167,6 +168,15 @@ public class PhotoView extends GLView {
     private static float TRANSITION_SCALE_FACTOR = 0.74f;
     private static final int ICON_RATIO = 6;
 
+    //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    private static final int TRANS_NONE = 0;
+    private static final int TRANS_SWITCH_NEXT = 3;
+    private static final int TRANS_SWITCH_PREVIOUS = 4;
+    private int mTransitionMode = TRANS_NONE;
+    // $_rbox_$_modify_$_end
+
+
     // whether we want to apply card deck effect in page mode.
     private static final boolean CARD_EFFECT = true;
 
@@ -232,6 +242,18 @@ public class PhotoView extends GLView {
     private static final int HOLD_TOUCH_DOWN = 1;
     private static final int HOLD_CAPTURE_ANIMATION = 2;
     private static final int HOLD_DELETE = 4;
+
+    //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin 
+    public final int ZOOMIN    = 0;
+    public final int ZOOMOUT = 1;
+    public int mZoomCount = 0;
+    public final int  SLIDE_LEFT=1;
+    public final int  SLIDE_RIGHT=2;
+
+    private final int ZOOMMAX=3;
+    private float mScale = 1.0f;
+     // $_rbox_$_modify_$_end
 
     // mTouchBoxIndex is the index of the box that is touched by the down
     // gesture in film mode. The value Integer.MAX_VALUE means no box was
@@ -581,6 +603,49 @@ public class PhotoView extends GLView {
         }
         return mCompensation;
     }
+
+    //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    public boolean scalingImage(int zoom){
+	     if (mTransitionMode != TRANS_NONE) return false;
+            PositionController controller = mPositionController;
+	     if(controller.isAtMinimalScale()){mZoomCount=0;}
+	     if(mZoomCount==0){mScale= controller.getCurrentScale();}
+	     if(zoom == ZOOMOUT && (mZoomCount<ZOOMMAX)){
+		     mZoomCount++;
+	            controller.zoomIn(getWidth()/2, getHeight()/2, Math.max((1.0f+mZoomCount*0.3f), mScale * (1.0f+mZoomCount*0.3f)));
+		     return true;
+	     }
+	     if((zoom == ZOOMIN) && (mZoomCount>0)){
+		  mZoomCount--;
+		  if(0==mZoomCount){controller.resetToFullView();return true;}
+		  controller.zoomIn(getWidth()/2, getHeight()/2, Math.max((1.0f+mZoomCount*0.3f), mScale * (1.0f+mZoomCount*0.3f)));
+		  return true;
+            }
+	     return false;
+    }
+    // $_rbox_$_modify_$_end
+
+    //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    public boolean slideShowImage(int dir, boolean showbar){
+        if (mTransitionMode != TRANS_NONE) return false;
+	 if (true == showbar) return false;
+
+	 if(dir==SLIDE_RIGHT){
+	 	slideToNextPicture();
+		Log.d(TAG, "SlideShowImage(SLIDE_RIGHT) OK!");
+		return true;
+	 }
+	 if(dir==SLIDE_LEFT){
+	 	slideToPrevPicture();
+		Log.d(TAG, "SlideShowImage(SLIDE_LEFT) OK!");
+		return true;
+	 }
+	 return false;
+    }
+    // $_rbox_$_modify_$_end
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  Pictures

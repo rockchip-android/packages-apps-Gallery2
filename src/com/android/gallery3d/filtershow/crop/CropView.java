@@ -34,6 +34,14 @@ import android.view.View;
 
 import com.android.gallery3d.R;
 
+// $_rbox_$_modify_$_chengmingchuan_$20140225
+// $_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+import android.os.Environment;
+import com.android.gallery3d.ui.GLRoot;
+// $_rbox_$_modify_$_end
+
+
 
 public class CropView extends View {
     private static final String LOGTAG = "CropView";
@@ -135,6 +143,36 @@ public class CropView extends View {
     public RectF getPhoto() {
         return mCropObj.getOuterBounds();
     }
+
+	// $_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    private boolean onKeycodeMove(int dx, int dy){
+
+        mMovingBlock = mCropObj.selectEdge(CropObject.MOVE_BLOCK);
+		mState = Mode.MOVE;
+		mMovingBlock = false;
+		boolean flag = mCropObj.moveCurrentSelection(dx, dy);
+		invalidate();
+		return flag;
+	}
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch(keyCode){
+		 	case KeyEvent.KEYCODE_DPAD_LEFT:
+				return onKeycodeMove(-10,0);
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+				return onKeycodeMove(10,0);
+			case KeyEvent.KEYCODE_DPAD_UP:
+				return onKeycodeMove(0,-10);
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				return onKeycodeMove(0,10);
+			default:
+				break;
+		}
+		return super.onKeyDown(keyCode, event);
+    }
+    // $_rbox_$_modify_$_end
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

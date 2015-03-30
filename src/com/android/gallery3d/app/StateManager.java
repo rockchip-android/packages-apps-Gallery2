@@ -1,4 +1,5 @@
 /*
+ * $_FOR_ROCKCHIP_RBOX_$
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +30,12 @@ import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.UsageStatistics;
 
 import java.util.Stack;
+
+//$_rbox_$_modify_$_chengmingchuan_$_20140224_$_[Info: Handle Keycode]
+//$_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+//$_rbox_$_modify_$_end
+
 
 public class StateManager {
     @SuppressWarnings("unused")
@@ -142,6 +149,14 @@ public class StateManager {
     public int getStateCount() {
         return mStack.size();
     }
+
+	 //$_rbox_$_modify_$_chengmingchuan_$_20140224_$_[Info: Handle Keycode]
+	// $_rbox_$_modify_$_begin
+	 public boolean onKeyDown(int keyCode, KeyEvent event) {
+		 return getTopState().onKeyDown(keyCode, event);
+	 }
+	 // $_rbox_$_modify_$_end
+
 
     public boolean itemSelected(MenuItem item) {
         if (!mStack.isEmpty()) {

@@ -57,6 +57,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+// $_rbox_$_modify_$_chengmingchuan_$20140225
+// $_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+import android.os.Environment;
+import com.android.gallery3d.ui.GLRoot;
+// $_rbox_$_modify_$_end
+
+
 /**
  * Activity for cropping an image.
  */
@@ -94,6 +102,29 @@ public class CropActivity extends Activity {
     private static final int DO_EXTRA_OUTPUT = 1 << 2;
 
     private static final int FLAG_CHECK = DO_SET_WALLPAPER | DO_RETURN_DATA | DO_EXTRA_OUTPUT;
+
+	// $_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(KeyEvent.KEYCODE_BACK==keyCode){
+			this.onBackPressed();
+			return true;
+	 	}
+
+		switch(keyCode){
+			case KeyEvent.KEYCODE_DPAD_CENTER: 
+			case KeyEvent.KEYCODE_ENTER:
+				startFinishOutput();
+				return true;
+			default:
+				break;
+	 	}
+		return mCropView.onKeyDown(keyCode, event);
+
+    }
+    // $_rbox_$_modify_$_end
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

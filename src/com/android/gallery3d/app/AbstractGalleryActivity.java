@@ -79,6 +79,8 @@ public class AbstractGalleryActivity extends Activity implements GalleryContext 
         mPanoramaViewHelper = new PanoramaViewHelper(this);
         mPanoramaViewHelper.onCreate();
         doBindBatchService();
+
+		
     }
 
     @Override

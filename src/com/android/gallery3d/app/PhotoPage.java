@@ -1,4 +1,5 @@
 /*
+ * $_FOR_ROCKCHIP_RBOX_$
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,6 +79,11 @@ import com.android.gallery3d.ui.SelectionManager;
 import com.android.gallery3d.ui.SynchronizedHandler;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.UsageStatistics;
+
+//$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+//$_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+//$_rbox_$_modify_$_end
 
 public abstract class PhotoPage extends ActivityState implements
         PhotoView.Listener, AppBridge.Server, ShareActionProvider.OnShareTargetSelectedListener,
@@ -404,7 +410,7 @@ public abstract class PhotoPage extends ActivityState implements
         mStartInFilmstrip = data.getBoolean(KEY_START_IN_FILMSTRIP, false);
         //boolean inCameraRoll = data.getBoolean(KEY_IN_CAMERA_ROLL, false);
         boolean inCameraRoll = false;
-	mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
+        mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
         if (mSetPathString != null) {
             mShowSpinner = true;
             mAppBridge = (AppBridge) data.getParcelable(KEY_APP_BRIDGE);
@@ -1018,6 +1024,76 @@ public abstract class PhotoPage extends ActivityState implements
             }
         }
     }
+	
+	
+   //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    //$_rbox_$_modify_$_begin
+    @Override
+    protected boolean onKeyDown(int keyCode, KeyEvent event) {
+    	 Log.d(TAG, "=========================================KeyCode="+ keyCode);
+	 switch(keyCode){
+	 	case KeyEvent.KEYCODE_DPAD_LEFT:
+			return mPhotoView.slideShowImage(mPhotoView.SLIDE_LEFT, mShowBars);
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			return mPhotoView.slideShowImage(mPhotoView.SLIDE_RIGHT, mShowBars);
+		case KeyEvent.KEYCODE_DPAD_UP:
+			return mPhotoView.slideShowImage(mPhotoView.SLIDE_LEFT, mShowBars);
+		case KeyEvent.KEYCODE_DPAD_DOWN:
+			return mPhotoView.slideShowImage(mPhotoView.SLIDE_RIGHT, mShowBars);
+		case KeyEvent.KEYCODE_DPAD_CENTER: 
+		case KeyEvent.KEYCODE_ENTER:
+			return this.onOkPressed();
+		default:
+			break;
+			/*
+		case KeyEvent.KEYCODE_TV_ROTATE_LEFT:
+			MediaItem current1 = mModel.getMediaItem(0);
+                     Path path1 = current1.getPath();
+			mSelectionManager.deSelectAll();
+			mSelectionManager.toggle(path1);
+			mMenuExecutor.startAction(R.id.action_rotate_ccw, R.string.rotate_left, null);
+			return true;
+		case KeyEvent.KEYCODE_TV_ROTATE_RIGHT:
+			MediaItem current2 = mModel.getMediaItem(0);
+                     Path path2 = current2.getPath();
+			mSelectionManager.deSelectAll();
+			mSelectionManager.toggle(path2);
+			mMenuExecutor.startAction(R.id.action_rotate_cw, R.string.rotate_right, null);
+			return true;
+		case KeyEvent.KEYCODE_TV_ZOOM_IN:
+			mPhotoView.scalingImage(mPhotoView.ZOOMIN);
+			return true;
+		case KeyEvent.KEYCODE_TV_ZOOM_OUT:
+			mPhotoView.scalingImage(mPhotoView.ZOOMOUT);
+			return true;
+		*/
+	 }
+	 return false;
+    }
+	//$_rbox_$_modify_$_end
+
+    //$_rbox_$_modify_$_chengmingchuan
+    //$_rbox_$_modify_$_begin
+    private boolean onOkPressed(){
+	 MediaItem item = mModel.getMediaItem(0);
+        if ((item == null) ) {
+            // item is not ready, ignore
+            return false;
+        }
+
+        boolean playVideo = (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
+        if (playVideo) {
+            playVideo((Activity) mActivity, item.getPlayUri(), item.getName());
+        } else {
+            if (mShowBars) {
+                hideBars();
+            } else {
+                showBars();
+            }
+        }
+	 return true;
+    }
+    //$_rbox_$_modify_$_end
     
     private static final int MSG = 0x01;
     private Handler mSwithHandler = new Handler(){
