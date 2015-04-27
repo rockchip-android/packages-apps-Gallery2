@@ -94,7 +94,7 @@ public class CropActivity extends Activity {
      * sure the intent stays below 1MB.We should consider just returning a byte
      * array instead of a Bitmap instance to avoid overhead.
      */
-    public static final int MAX_BMAP_IN_INTENT = 750000;
+    public static final int MAX_BMAP_IN_INTENT = 500000;
 
     // Flags
     private static final int DO_SET_WALLPAPER = 1;
@@ -528,6 +528,7 @@ public class CropActivity extends Activity {
                             ret = tmp;
                         }
                     }
+                    Log.d(LOGTAG,"==Find the small cropped bitmap that is returned in the intent==size:"+CropMath.getBitmapSize(ret));
                     mResultIntent.putExtra(CropExtras.KEY_DATA, ret);
                 }
             }
@@ -733,6 +734,7 @@ public class CropActivity extends Activity {
         if (ret == null) {
             return null;
         }
+     //    Log.d(LOGTAG,"==getDownsampledBitmap==CropMath.getBitmapSize(ret):"+CropMath.getBitmapSize(ret));
         // Handle edge case for rounding.
         if (CropMath.getBitmapSize(ret) > max_size) {
             return Bitmap.createScaledBitmap(ret, ret.getWidth() >> 1, ret.getHeight() >> 1, true);
