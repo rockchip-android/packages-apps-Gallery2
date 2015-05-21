@@ -464,6 +464,7 @@ public class GLRootView extends GLSurfaceView
     @Override
     public boolean onGenericMotion(View v, MotionEvent event) {
         if (!isEnabled()) return false;
+        if(mContentView!=null)
         mContentView.dispatchGenericMotion(v,event);
         return false;
     }
