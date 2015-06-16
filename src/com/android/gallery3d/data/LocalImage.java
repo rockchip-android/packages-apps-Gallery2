@@ -362,6 +362,10 @@ public class LocalImage extends LocalMediaItem {
 	        if(height > 0){
 	            MediaDetails.setHeight(details, height);
 	        }
+            int w = rotation % 180 == 0 ? getWidth() : getHeight();
+            int h = rotation % 180 == 0 ? getHeight() : getWidth();
+            MediaDetails.setWidth(details, w);
+            MediaDetails.setHeight(details, h);
 //        }
         return details;
     }
