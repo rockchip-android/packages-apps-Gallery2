@@ -50,7 +50,13 @@ public class PresetManagementDialog extends DialogFragment implements View.OnCli
         FilterShowActivity activity = (FilterShowActivity) getActivity();
         switch (v.getId()) {
             case R.id.cancel:
-                mAdapter.clearChangedRepresentations();
+                try{
+                    mAdapter.clearChangedRepresentations();
+                }
+                catch(Exception e){
+                    mAdapter = activity.getUserPresetsAdapter();
+                    mAdapter.clearChangedRepresentations();
+                }
                 mAdapter.clearDeletedRepresentations();
                 activity.updateUserPresetsFromAdapter(mAdapter);
                 dismiss();
@@ -58,7 +64,13 @@ public class PresetManagementDialog extends DialogFragment implements View.OnCli
             case R.id.ok:
                 String text = String.valueOf(mEditText.getText());
                 activity.saveCurrentImagePreset(text);
-                mAdapter.updateCurrent();
+                try{
+                    mAdapter.updateCurrent();
+                }
+                catch(Exception e){
+                    mAdapter = activity.getUserPresetsAdapter();
+                    mAdapter.updateCurrent();
+                }
                 activity.updateUserPresetsFromAdapter(mAdapter);
                 dismiss();
                 break;
