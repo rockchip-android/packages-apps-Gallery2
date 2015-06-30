@@ -19,6 +19,8 @@ package com.android.gallery3d.filtershow.crop;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.WallpaperManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -36,6 +38,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -57,10 +61,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+
+
+
 // $_rbox_$_modify_$_chengmingchuan_$20140225
 // $_rbox_$_modify_$_begin
 import android.view.KeyEvent;
 import android.os.Environment;
+
 import com.android.gallery3d.ui.GLRoot;
 // $_rbox_$_modify_$_end
 
@@ -494,7 +503,6 @@ public class CropActivity extends Activity {
         protected Boolean doInBackground(Bitmap... params) {
             boolean failure = false;
             Bitmap img = params[0];
-
             // Set extra for crop bounds
             if (mCrop != null && mPhoto != null && mOrig != null) {
                 RectF trueCrop = CropMath.getScaledCropBounds(mCrop, mPhoto, mOrig);
@@ -635,6 +643,23 @@ public class CropActivity extends Activity {
                         }
                     } else {
                         mResultIntent.setData(mOutUri);
+                        ContentResolver cr =getContentResolver();  
+						String path = null;
+						Cursor cursor = cr.query(mOutUri, null, null, null,
+								null);
+						if (cursor != null) {
+							cursor.moveToFirst();
+
+							path = cursor.getString(cursor
+									.getColumnIndex("_data"));
+							cursor.close();
+						}
+						ContentValues values = new ContentValues();
+						if (path != null) {
+							File f = new File(path);
+                        values.put(Images.Media.SIZE, f.length());
+                        getContentResolver().update(mOutUri, values, null, null);
+                        }
                     }
                 } else {
                     // Compress to byte array
