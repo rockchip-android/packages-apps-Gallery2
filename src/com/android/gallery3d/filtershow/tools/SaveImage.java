@@ -349,7 +349,7 @@ public class SaveImage {
         // If no file is moved, newSourceUri will be the same as mSourceUri.
         Uri newSourceUri = mSourceUri;
         if (!flatten) {
-            newSourceUri = moveSrcToAuxIfNeeded(mSourceUri, mDestinationFile);
+           // newSourceUri = moveSrcToAuxIfNeeded(mSourceUri, mDestinationFile);
         }
 
         Uri savedUri = mSelectedImageUri;
@@ -386,7 +386,7 @@ public class SaveImage {
                     // After this call, mSelectedImageUri will be actually
                     // pointing at the new file mDestinationFile.
                     savedUri = SaveImage.linkNewFileToUri(mContext, mSelectedImageUri,
-                            mDestinationFile, time, !flatten);
+                            mDestinationFile, time, false);
                 }
             }
             if (mCallback != null) {
@@ -681,7 +681,7 @@ public class SaveImage {
         // In the case of incoming Uri is just a local file Uri (like a cached
         // file), we can't just update the Uri. We have to create a new Uri.
         boolean fileUri = isFileUri(sourceUri);
-
+		
         if (fileUri || oldSelectedFile == null || !deleteOriginal) {
             result = context.getContentResolver().insert(
                     Images.Media.EXTERNAL_CONTENT_URI, values);

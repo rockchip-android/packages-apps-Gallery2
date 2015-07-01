@@ -1408,9 +1408,7 @@ public class FilterShowActivity extends FragmentActivity implements OnItemClickL
             int bucketId = GalleryUtils.getBucketId(saveDir.getPath());
             String albumName = LocalAlbum.getLocalizedName(getResources(), bucketId, null);
             showSavingProgress(albumName);
-            mSelectedImageUri = SaveImage.makeAndInsertUri(this,mSelectedImageUri);
-            File newFile = SaveImage.getNewFile(this, mSelectedImageUri);
-            mImageShow.saveImage(this, newFile);
+            mImageShow.saveImage(this, null);
         } else {
             done();
         }
