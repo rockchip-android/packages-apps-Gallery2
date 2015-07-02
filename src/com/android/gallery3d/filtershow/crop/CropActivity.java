@@ -644,21 +644,21 @@ public class CropActivity extends Activity {
                     } else {
                         mResultIntent.setData(mOutUri);
                         ContentResolver cr =getContentResolver();  
-						String path = null;
-						Cursor cursor = cr.query(mOutUri, null, null, null,
-								null);
-						if (cursor != null) {
-							cursor.moveToFirst();
-
-							path = cursor.getString(cursor
-									.getColumnIndex("_data"));
-							cursor.close();
-						}
-						ContentValues values = new ContentValues();
-						if (path != null) {
-							File f = new File(path);
-                        values.put(Images.Media.SIZE, f.length());
-                        getContentResolver().update(mOutUri, values, null, null);
+			String path = null;
+			Cursor cursor = cr.query(mOutUri, null, null, null,null);
+			if (cursor != null) {
+				cursor.moveToFirst();
+				int col=cursor.getColumnIndex("_data");
+				if(col>=0){
+					path = cursor.getString(cursor.getColumnIndex("_data"));
+				}
+				cursor.close();
+			}
+			ContentValues values = new ContentValues();
+			if (path != null) {
+				File f = new File(path);
+				values.put(Images.Media.SIZE, f.length());
+				getContentResolver().update(mOutUri, values, null, null);
                         }
                     }
                 } else {
