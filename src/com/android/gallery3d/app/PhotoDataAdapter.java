@@ -1059,8 +1059,14 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                     info.size = mSource.getMediaItemCount();
                 }
                 if (!info.reloadContent) continue;
-                info.items = mSource.getMediaItem(
-                        info.contentStart, info.contentEnd);
+                try {
+                    info.items = mSource.getMediaItem(
+                            info.contentStart, info.contentEnd);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    return;
+                }
 
                 int index = MediaSet.INDEX_NOT_FOUND;
 
