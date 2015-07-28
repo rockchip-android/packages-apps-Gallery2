@@ -1076,16 +1076,21 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                     mFocusHintPath = null;
                 }
 
-                // Otherwise try to see if the currently focused item can be found.
-                if (index == MediaSet.INDEX_NOT_FOUND) {
-                    MediaItem item = findCurrentMediaItem(info);
-                    if (item != null && item.getPath() == info.target) {
-                        index = info.indexHint;
-                    } else {
-                        index = findIndexOfTarget(info);
+                try {
+                    // Otherwise try to see if the currently focused item can be found.
+                    if (index == MediaSet.INDEX_NOT_FOUND) {
+                        MediaItem item = findCurrentMediaItem(info);
+                        if (item != null && item.getPath() == info.target) {
+                            index = info.indexHint;
+                        } else {
+                            index = findIndexOfTarget(info);
+                        }
                     }
                 }
-
+				catch (Exception e){ 
+                    e.printStackTrace();
+                    return;
+                }
                 // The image has been deleted. Focus on the next image (keep
                 // mCurrentIndex unchanged) or the previous image (decrease
                 // mCurrentIndex by 1). In page mode we want to see the next
