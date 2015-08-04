@@ -132,7 +132,7 @@
     <string name="mimetype" msgid="8024168704337990470">"MIME 类型"</string>
     <string name="file_size" msgid="8486169301588318915">"文件大小"</string>
     <string name="maker" msgid="7921835498034236197">"制造商"</string>
-    <string name="model" msgid="8240207064064337366">"模型"</string>
+    <string name="model" msgid="8240207064064337366">"型号"</string>
     <string name="flash" msgid="2816779031261147723">"闪光灯"</string>
     <string name="aperture" msgid="5920657630303915195">"光圈"</string>
     <string name="focal_length" msgid="1291383769749877010">"焦距"</string>
