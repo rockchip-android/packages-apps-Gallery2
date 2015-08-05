@@ -357,7 +357,11 @@ public class GLRootView extends GLSurfaceView
 
         try {
             onDrawFrameLocked(gl);
-        } finally {
+        }
+        catch (NullPointerException e){
+            //e.printStackTrace(); 
+        }
+        finally {
             mRenderLock.unlock();
         }
 
