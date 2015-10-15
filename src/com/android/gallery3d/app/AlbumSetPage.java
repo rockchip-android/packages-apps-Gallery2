@@ -206,7 +206,7 @@ public class AlbumSetPage extends ActivityState implements
     }
 
     public void onSingleTapUp(int slotIndex) {
-        if (!mIsActive) return;
+        if (!mIsActive || !mAlbumSetDataAdapter.isActive(slotIndex)) return;
 
         if (mSelectionManager.inSelectionMode()) {
             MediaSet targetSet = mAlbumSetDataAdapter.getMediaSet(slotIndex);
@@ -253,7 +253,7 @@ public class AlbumSetPage extends ActivityState implements
     }
 
     private void pickAlbum(int slotIndex) {
-        if (!mIsActive) return;
+        if (!mIsActive || !mAlbumSetDataAdapter.isActive(slotIndex)) return;
 
         MediaSet targetSet = mAlbumSetDataAdapter.getMediaSet(slotIndex);
         if (targetSet == null) return; // Content is dirty, we shall reload soon
@@ -316,7 +316,9 @@ public class AlbumSetPage extends ActivityState implements
     }
 
     public void onLongTap(int slotIndex) {
-        if (mGetContent || mGetAlbum) return;
+        if (mGetContent || mGetAlbum
+                || !mIsActive || !mAlbumSetDataAdapter.isActive(slotIndex))
+            return;
         MediaSet set = mAlbumSetDataAdapter.getMediaSet(slotIndex);
         if (set == null) return;
         mSelectionManager.setAutoLeaveSelectionMode(true);
@@ -852,6 +854,7 @@ public class AlbumSetPage extends ActivityState implements
 
         @Override
         public MediaDetails getDetails() {
+            if (!mAlbumSetDataAdapter.isActive(mIndex)) return null;
             MediaObject item = mAlbumSetDataAdapter.getMediaSet(mIndex);
             if (item != null) {
                 mAlbumSetView.setHighlightItemPath(item.getPath());
