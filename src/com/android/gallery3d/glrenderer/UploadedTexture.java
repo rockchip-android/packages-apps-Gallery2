@@ -59,7 +59,7 @@ public abstract class UploadedTexture extends BasicTexture {
     private static int sUploadedCount;
     private static final int UPLOAD_LIMIT = 100;
 
-    protected Bitmap mBitmap;
+    public Bitmap mBitmap;
     private int mBorder;
 
     protected UploadedTexture() {

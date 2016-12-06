@@ -224,6 +224,8 @@ public abstract class PhotoPage extends ActivityState implements
         public void pause();
         public boolean isEmpty();
         public void setCurrentPhoto(Path path, int indexHint);
+        //jyzheng add
+        public MediaItem getCurrentMediaItem();
     }
 
     private class MyMenuVisibilityListener implements OnMenuVisibilityListener {

@@ -563,6 +563,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         return mCurrentIndex;
     }
 
+    public MediaItem getCurrentMediaItem() {
+        return mData[mCurrentIndex % DATA_CACHE_SIZE];
+    }
+
     @Override
     public MediaItem getMediaItem(int offset) {
         int index = mCurrentIndex + offset;

@@ -23,6 +23,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory.Options;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore.Images;
@@ -34,6 +36,7 @@ import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.app.PanoramaMetadataSupport;
 import com.android.gallery3d.common.ApiHelper;
 import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.data.MediaItem.BitmapInfo;
 import com.android.gallery3d.exif.ExifInterface;
 import com.android.gallery3d.exif.ExifTag;
 import com.android.gallery3d.filtershow.tools.SaveImage;
@@ -176,18 +179,22 @@ public class LocalImage extends LocalMediaItem {
                 type, filePath);
     }
 
-    public static class LocalImageRequest extends ImageCacheRequest {
+    public class LocalImageRequest extends ImageCacheRequest {
         private String mLocalFilePath;
 
         LocalImageRequest(GalleryApp application, Path path, long timeModified,
                 int type, String localFilePath) {
             super(application, path, timeModified, type,
-                    MediaItem.getTargetSize(type));
+                    MediaItem.getTargetSize(type),localFilePath);
             mLocalFilePath = localFilePath;
         }
 
         @Override
         public Bitmap onDecodeOriginal(JobContext jc, final int type) {
+            if(type == MediaItem.TYPE_DECODE){
+                return new com.android.gallery3d.util.BitmapUtils(mApplication.getAndroidContext())
+                    .getBitmap(getContentUri(), 1024, 768);
+            }
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             int targetSize = MediaItem.getTargetSize(type);
@@ -270,6 +277,14 @@ public class LocalImage extends LocalMediaItem {
         SaveImage.deleteAuxFiles(contentResolver, getContentUri());
         contentResolver.delete(baseUri, "_id=?",
                 new String[]{String.valueOf(id)});
+        File file = new File(filePath);
+        try{
+           if(file.exists()){
+              file.delete();
+           }
+        }catch(Exception e){
+         e.printStackTrace();
+        }
     }
 
     @Override
@@ -346,5 +361,26 @@ public class LocalImage extends LocalMediaItem {
     @Override
     public String getFilePath() {
         return filePath;
+    }
+
+    @Override
+    public Job<BitmapInfo> requestDecodeImage(int type, Uri mUri) {
+        return new BitmapJob(type,mUri);
+    }
+
+    private class BitmapJob implements Job<BitmapInfo> {
+        private int mType;
+        private Uri mUri;
+
+        protected BitmapJob(int type,Uri uri) {
+            mType = type;
+            mUri = uri;
+        }
+
+        @Override
+        public BitmapInfo run(JobContext jc) {
+            return new BitmapInfo(mUri,
+                    new com.android.gallery3d.util.BitmapUtils(mApplication.getAndroidContext()).getNotRotateBitmap(mUri, 1024, 768));
+        }
     }
 }
