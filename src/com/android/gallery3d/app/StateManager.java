@@ -191,34 +191,32 @@ public class StateManager {
 
         Log.v(TAG, "finishState " + state);
         if (state != mStack.peek().activityState) {
-            if (state.isDestroyed()) {
+            //    if (state.isDestroyed()) {
                 Log.d(TAG, "The state is already destroyed");
                 return;
-            } else {
+            /*  } else {
                 throw new IllegalArgumentException("The stateview to be finished"
                         + " is not at the top of the stack: " + state + ", "
                         + mStack.peek().activityState);
-            }
+             }*/
         }
 
         // Remove the top state.
         mStack.pop();
         state.mIsFinishing = true;
-        ActivityState top = !mStack.isEmpty() ? mStack.peek().activityState : null;
-        if (mIsResumed && fireOnPause) {
-            if (top != null) {
-                state.transitionOnNextPause(state.getClass(), top.getClass(),
-                        StateTransitionAnimation.Transition.Outgoing);
-            }
-            state.onPause();
-        }
+        if (mIsResumed) state.onPause();
         mActivity.getGLRoot().setContentPane(null);
         state.onDestroy();
 
-        if (top != null && mIsResumed) top.resume();
-        if (top != null) {
-            UsageStatistics.onContentViewChanged(UsageStatistics.COMPONENT_GALLERY,
-                    top.getClass().getSimpleName());
+        if (!mStack.isEmpty()) {
+            // Restore the immediately previous state
+            ActivityState top = mStack.peek().activityState;
+            if (mIsResumed)
+                top.resume();
+            if (top != null) {
+                UsageStatistics.onContentViewChanged(UsageStatistics.COMPONENT_GALLERY,
+                        top.getClass().getSimpleName());
+            }
         }
     }
 

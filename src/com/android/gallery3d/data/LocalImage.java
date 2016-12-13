@@ -49,6 +49,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import android.content.Context;
+import com.android.gif.GifTextrue;
+import java.io.InputStream;
+
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
     private static final String TAG = "LocalImage";
@@ -249,9 +253,9 @@ public class LocalImage extends LocalMediaItem {
             operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
         }
 
-        if (BitmapUtils.isRotationSupported(mimeType)) {
+        //if (BitmapUtils.isRotationSupported(mimeType)) {
             operation |= SUPPORT_ROTATE;
-        }
+        //}
 
         if (GalleryUtils.isValidLocation(latitude, longitude)) {
             operation |= SUPPORT_SHOW_ON_MAP;
