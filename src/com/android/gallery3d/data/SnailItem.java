@@ -94,7 +94,7 @@ public class SnailItem extends MediaItem {
     public void updateVersion() {
         mDataVersion = nextVersionNumber();
     }
-
+    
     @Override
     public Job<BitmapInfo> requestDecodeImage(int type, Uri mUri) {
         // TODO Auto-generated method stub

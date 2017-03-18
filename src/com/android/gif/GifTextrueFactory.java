@@ -8,7 +8,7 @@
  * Author        : caijq
  * Date          : 2011-04-19
  * History        :
- *
+ * 
  ************************************************************/
 package com.android.gif;
 
@@ -27,6 +27,7 @@ public class GifTextrueFactory {
             sActiveGif = null;
             Log.i(TAG, "freezeAllGif");
         }
+
     }
 
     public static void startOnly(GifTextrue g) {
@@ -37,9 +38,11 @@ public class GifTextrueFactory {
                 }
                 g.startAnimate();
                 sActiveGif = g;
+
             }
             Log.i(TAG, "startOnly");
         }
+
     }
 
     public static GifTextrue getGifTextrue() {

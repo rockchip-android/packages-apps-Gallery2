@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest android:versionCode="40030"
-        android:versionName="1.1.40030"
+        android:versionName="1.1.40032-20140424"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.gallery3d"
-		android:sharedUserId="android.uid.system">
+        package="com.android.gallery3d">
 
     <original-package android:name="com.android.gallery3d" />
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="22" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
 
     <permission android:name="com.android.gallery3d.permission.GALLERY_PROVIDER"
             android:protectionLevel="signatureOrSystem" />
@@ -29,10 +28,11 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="com.android.gallery3d.permission.GALLERY_PROVIDER" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <supports-screens android:smallScreens="false"
             android:normalScreens="true" android:largeScreens="true"
             android:anyDensity="true" />
@@ -138,7 +138,13 @@
                 <data android:scheme="https" />
                 <data android:scheme="content" />
                 <data android:scheme="file" />
-                <data android:mimeType="image/*" />
+                <data android:mimeType="image/bmp" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/gif" />
+                <data android:mimeType="image/png" />
+                <data android:mimeType="image/webp" />
+                <data android:mimeType="image/x-ms-bmp" />
+                <data android:mimeType="image/vnd.wap.wbmp" />
                 <data android:mimeType="application/vnd.google.panorama360+jpg" />
             </intent-filter>
             <intent-filter>
@@ -319,6 +325,7 @@
                 android:label="@string/appwidget_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="widget_update" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                     android:resource="@xml/widget_info" />

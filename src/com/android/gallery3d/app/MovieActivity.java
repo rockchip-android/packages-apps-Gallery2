@@ -16,11 +16,16 @@
 
 package com.android.gallery3d.app;
 
+import java.util.ArrayList;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -70,10 +75,37 @@ public class MovieActivity extends Activity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
     }
+    
+    public static boolean isSeviceWorked(Context context, String serviceName) {
+        ActivityManager myManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        ArrayList<RunningServiceInfo> runningService = (ArrayList<RunningServiceInfo>) myManager
+                .getRunningServices(500);
+        for (int i = 0; i < runningService.size(); i++) {
+            if (runningService.get(i).service.getClassName().toString()
+                    .equals(serviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        boolean work = isSeviceWorked(this,
+                "com.android.rk.mediafloat.MediaFloatService");
+        if (work) {
+            Uri uri = getIntent().getData();
+            if (uri == null || uri.toString().trim().equals("")) {
+                return;
+            }
+            Intent intent = new Intent("com.rk.app.mediafloat.CUSTOM_ACTION");
+            intent.putExtra("URI", uri.toString());
+            this.startService(intent);
+            finish();
+        }
 
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);

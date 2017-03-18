@@ -101,7 +101,7 @@ public class ActionImage extends MediaItem {
     public int getHeight() {
         return 0;
     }
-
+    
     @Override
     public Job<BitmapInfo> requestDecodeImage(int type, Uri mUri) {
         // TODO Auto-generated method stub

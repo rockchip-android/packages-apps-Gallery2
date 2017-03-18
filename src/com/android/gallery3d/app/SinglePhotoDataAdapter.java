@@ -158,7 +158,8 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
                         mItem.requestImage(MediaItem.TYPE_DECODE),
                         mThumbListener);
             } else {
-               mTask = mThreadPool.submit(mItem.requestImage(MediaItem.TYPE_THUMBNAIL),
+                mTask = mThreadPool.submit(
+                        mItem.requestImage(MediaItem.TYPE_THUMBNAIL),
                         mThumbListener);
             }
         }
@@ -263,7 +264,7 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
     public int getLoadingState(int offset) {
         return mLoadingState;
     }
-
+    
     @Override
     public MediaItem getCurrentMediaItem() {
         return mItem;

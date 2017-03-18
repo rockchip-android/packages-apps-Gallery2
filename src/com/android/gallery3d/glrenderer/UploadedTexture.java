@@ -134,6 +134,9 @@ public abstract class UploadedTexture extends BasicTexture {
     private Bitmap getBitmap() {
         if (mBitmap == null) {
             mBitmap = onGetBitmap();
+            if(mBitmap == null){
+                return null;
+            }
             int w = mBitmap.getWidth() + mBorder * 2;
             int h = mBitmap.getHeight() + mBorder * 2;
             if (mWidth == UNSPECIFIED) {
@@ -144,7 +147,10 @@ public abstract class UploadedTexture extends BasicTexture {
     }
 
     private void freeBitmap() {
-        Assert.assertTrue(mBitmap != null);
+//        Assert.assertTrue(mBitmap != null);
+        if(mBitmap == null){
+            return;
+        }
         onFreeBitmap(mBitmap);
         mBitmap = null;
     }
@@ -191,6 +197,9 @@ public abstract class UploadedTexture extends BasicTexture {
             uploadToCanvas(canvas);
         } else if (!mContentValid) {
             Bitmap bitmap = getBitmap();
+            if(bitmap == null){
+                return;
+            }
             int format = GLUtils.getInternalFormat(bitmap);
             int type = GLUtils.getType(bitmap);
             canvas.texSubImage2D(this, mBorder, mBorder, bitmap, format, type);
@@ -266,7 +275,7 @@ public abstract class UploadedTexture extends BasicTexture {
             mContentValid = true;
         } else {
             mState = STATE_ERROR;
-            throw new RuntimeException("Texture load fail, no bitmap");
+            //throw new RuntimeException("Texture load fail, no bitmap");
         }
     }
 

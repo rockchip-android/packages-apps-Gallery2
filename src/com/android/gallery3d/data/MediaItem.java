@@ -61,28 +61,24 @@ public abstract class MediaItem extends MediaObject {
     public class BitmapInfo{
         private Uri mUri ;
         private Bitmap mBitmap;
-
+        
         public BitmapInfo(Uri mUri, Bitmap mBitmap) {
             this.mUri = mUri;
             this.mBitmap = mBitmap;
         }
-
         public Uri getmUri() {
             return mUri;
         }
-
         public void setmUri(Uri mUri) {
             this.mUri = mUri;
         }
-
         public Bitmap getmBitmap() {
             return mBitmap;
         }
-
         public void setmBitmap(Bitmap mBitmap) {
             this.mBitmap = mBitmap;
         }
-
+        
     }
 
     public MediaItem(Path path, long version) {

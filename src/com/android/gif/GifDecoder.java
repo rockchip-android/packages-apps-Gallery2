@@ -547,7 +547,7 @@ public class GifDecoder extends Thread {
             GifFrame f = gifFrame;
             while (f.nextFrame != null) {
                 f = f.nextFrame;
-	}
+    }
         f.nextFrame = new GifFrame(image, delay);
         }
         // frames.addElement(new GifFrame(image, delay)); // add image to frame
@@ -731,7 +731,7 @@ public class GifDecoder extends Thread {
         //rockchips zhongming modify for [Image Distortion]  2010-12-9
         //image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
         try{
-			image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
+            image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
         } catch(OutOfMemoryError e) {
             System.gc();
         }

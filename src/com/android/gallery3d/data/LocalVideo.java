@@ -20,6 +20,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
@@ -233,6 +234,21 @@ public class LocalVideo extends LocalMediaItem {
             details.addDetail(MediaDetails.INDEX_DURATION, GalleryUtils.formatDuration(
                     mApplication.getAndroidContext(), durationInSec));
         }
+        if (filePath != null) {
+            MediaMetadataRetriever retrieverSrc = new MediaMetadataRetriever();
+            retrieverSrc.setDataSource(filePath);
+            String degreesString = retrieverSrc.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+            if (degreesString != null) {
+                int degrees = Integer.parseInt(degreesString);
+                if (degrees >= 0) {
+                    int w = degrees % 180 == 0 ? getWidth() : getHeight();
+                    int h = degrees % 180 == 0 ? getHeight() : getWidth();
+                    details.addDetail(MediaDetails.INDEX_WIDTH, w);
+                    details.addDetail(MediaDetails.INDEX_HEIGHT, h);
+                }
+            }
+        }
         return details;
     }
 
@@ -250,7 +266,7 @@ public class LocalVideo extends LocalMediaItem {
     public String getFilePath() {
         return filePath;
     }
-
+    
     @Override
     public Job<BitmapInfo> requestDecodeImage(int type, Uri mUri) {
         // TODO Auto-generated method stub

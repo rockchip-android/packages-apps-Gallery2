@@ -1,4 +1,5 @@
 /*
+ * $_FOR_ROCKCHIP_RBOX_$
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +17,18 @@
 
 package com.android.gallery3d.app;
 
+import java.util.ArrayList;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar.OnMenuVisibilityListener;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -72,6 +79,11 @@ import com.android.gallery3d.ui.SelectionManager;
 import com.android.gallery3d.ui.SynchronizedHandler;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.UsageStatistics;
+
+//$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+//$_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+//$_rbox_$_modify_$_end
 
 public abstract class PhotoPage extends ActivityState implements
         PhotoView.Listener, AppBridge.Server, ShareActionProvider.OnShareTargetSelectedListener,
@@ -185,6 +197,10 @@ public abstract class PhotoPage extends ActivityState implements
             new MyMenuVisibilityListener();
 
     private int mLastSystemUiVis = 0;
+    
+    public static final String PHOTOPAGE_UPDATE="photopage_view_update";
+    private BroadcastReceiver mSwitchReceiver;
+    private int  jumpToIndex = 0;
 
     private final PanoramaSupportCallback mUpdatePanoramaMenuItemsCallback = new PanoramaSupportCallback() {
         @Override
@@ -224,7 +240,7 @@ public abstract class PhotoPage extends ActivityState implements
         public void pause();
         public boolean isEmpty();
         public void setCurrentPhoto(Path path, int indexHint);
-        //jyzheng add
+        //jyzheng add 
         public MediaItem getCurrentMediaItem();
     }
 
@@ -392,7 +408,8 @@ public abstract class PhotoPage extends ActivityState implements
                     null;
         mTreatBackAsUp = data.getBoolean(KEY_TREAT_BACK_AS_UP, false);
         mStartInFilmstrip = data.getBoolean(KEY_START_IN_FILMSTRIP, false);
-        boolean inCameraRoll = data.getBoolean(KEY_IN_CAMERA_ROLL, false);
+        //boolean inCameraRoll = data.getBoolean(KEY_IN_CAMERA_ROLL, false);
+        boolean inCameraRoll = false;
         mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
         if (mSetPathString != null) {
             mShowSpinner = true;
@@ -471,7 +488,7 @@ public abstract class PhotoPage extends ActivityState implements
                     mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex,
                     mAppBridge == null ? -1 : 0,
                     mAppBridge == null ? false : mAppBridge.isPanorama(),
-                    mAppBridge == null ? false : mAppBridge.isStaticCamera());
+                    mAppBridge == null ? false : mAppBridge.isStaticCamera(),mAppBridge);
             mModel = pda;
             mPhotoView.setModel(mModel);
 
@@ -512,6 +529,7 @@ public abstract class PhotoPage extends ActivityState implements
                     }
                     // Reset the timeout for the bars after a swipe
                     refreshHidingMessage();
+                    mPhotoView.updateCurrentIndex();
                 }
 
                 @Override
@@ -1006,6 +1024,90 @@ public abstract class PhotoPage extends ActivityState implements
             }
         }
     }
+    
+    
+   //$_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    //$_rbox_$_modify_$_begin
+    @Override
+    protected boolean onKeyDown(int keyCode, KeyEvent event) {
+         Log.d(TAG, "=========================================KeyCode="+ keyCode);
+     switch(keyCode){
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+            return mPhotoView.slideShowImage(mPhotoView.SLIDE_LEFT, mShowBars);
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+            return mPhotoView.slideShowImage(mPhotoView.SLIDE_RIGHT, mShowBars);
+        case KeyEvent.KEYCODE_DPAD_UP:
+            return mPhotoView.slideShowImage(mPhotoView.SLIDE_LEFT, mShowBars);
+        case KeyEvent.KEYCODE_DPAD_DOWN:
+            return mPhotoView.slideShowImage(mPhotoView.SLIDE_RIGHT, mShowBars);
+        case KeyEvent.KEYCODE_DPAD_CENTER: 
+        case KeyEvent.KEYCODE_ENTER:
+            return this.onOkPressed();
+        default:
+            break;
+            /*
+        case KeyEvent.KEYCODE_TV_ROTATE_LEFT:
+            MediaItem current1 = mModel.getMediaItem(0);
+                     Path path1 = current1.getPath();
+            mSelectionManager.deSelectAll();
+            mSelectionManager.toggle(path1);
+            mMenuExecutor.startAction(R.id.action_rotate_ccw, R.string.rotate_left, null);
+            return true;
+        case KeyEvent.KEYCODE_TV_ROTATE_RIGHT:
+            MediaItem current2 = mModel.getMediaItem(0);
+                     Path path2 = current2.getPath();
+            mSelectionManager.deSelectAll();
+            mSelectionManager.toggle(path2);
+            mMenuExecutor.startAction(R.id.action_rotate_cw, R.string.rotate_right, null);
+            return true;
+        case KeyEvent.KEYCODE_TV_ZOOM_IN:
+            mPhotoView.scalingImage(mPhotoView.ZOOMIN);
+            return true;
+        case KeyEvent.KEYCODE_TV_ZOOM_OUT:
+            mPhotoView.scalingImage(mPhotoView.ZOOMOUT);
+            return true;
+        */
+     }
+     return false;
+    }
+    //$_rbox_$_modify_$_end
+
+    //$_rbox_$_modify_$_chengmingchuan
+    //$_rbox_$_modify_$_begin
+    private boolean onOkPressed(){
+     MediaItem item = mModel.getMediaItem(0);
+        if ((item == null) ) {
+            // item is not ready, ignore
+            return false;
+        }
+
+        boolean playVideo = (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
+        if (playVideo) {
+            playVideo((Activity) mActivity, item.getPlayUri(), item.getName());
+        } else {
+            if (mShowBars) {
+                hideBars();
+            } else {
+                showBars();
+            }
+        }
+     return true;
+    }
+    //$_rbox_$_modify_$_end
+    
+    private static final int MSG = 0x01;
+    private Handler mSwithHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MSG:
+                if(mPhotoView != null){
+                    mPhotoView.switchToImage(jumpToIndex);
+                }
+                break;
+            }
+        }   
+    };
 
     @Override
     protected boolean onItemSelected(MenuItem item) {
@@ -1090,6 +1192,13 @@ public abstract class PhotoPage extends ActivityState implements
                 return true;
             }
             case R.id.action_delete:
+                if(mModel instanceof PhotoDataAdapter){
+                    if(mModel.getCurrentIndex() == ((PhotoDataAdapter)mModel).getSize()-1){
+                       jumpToIndex = mModel.getCurrentIndex()-1;
+                    }else{
+                       jumpToIndex = mModel.getCurrentIndex();
+                    }
+                }
                 confirmMsg = mActivity.getResources().getQuantityString(
                         R.plurals.delete_selection, 1);
             case R.id.action_setas:
@@ -1221,17 +1330,39 @@ public abstract class PhotoPage extends ActivityState implements
         mMenuExecutor.startSingleItemAction(R.id.action_delete, mDeletePath);
         mDeletePath = null;
     }
+    
+    public static boolean isSeviceWorked(Context context, String serviceName) {
+        ActivityManager myManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        ArrayList<RunningServiceInfo> runningService = (ArrayList<RunningServiceInfo>) myManager
+                .getRunningServices(30);
+        for (int i = 0; i < runningService.size(); i++) {
+            if (runningService.get(i).service.getClassName().toString().equals(
+                    serviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void playVideo(Activity activity, Uri uri, String title) {
+        boolean isWork = isSeviceWorked(activity,"com.android.rk.mediafloat.MediaFloatService");
+        if (!isWork) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW)
                     .setDataAndType(uri, "video/*")
                     .putExtra(Intent.EXTRA_TITLE, title)
                     .putExtra(MovieActivity.KEY_TREAT_UP_AS_BACK, true);
+            intent.setClass(activity, MovieActivity.class);
             activity.startActivityForResult(intent, REQUEST_PLAY_VIDEO);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(activity, activity.getString(R.string.video_err),
                     Toast.LENGTH_SHORT).show();
+        }
+        } else {
+            Intent intent = new Intent("com.rk.app.mediafloat.CUSTOM_ACTION");
+            intent.putExtra("URI", uri.toString());
+            activity.startService(intent);
         }
     }
 
@@ -1297,7 +1428,11 @@ public abstract class PhotoPage extends ActivityState implements
     public void onPause() {
         super.onPause();
         mIsActive = false;
-
+        try{
+            mActivity.getAndroidContext().unregisterReceiver(mSwitchReceiver);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         mActivity.getGLRoot().unfreeze();
         mHandler.removeMessages(MSG_UNFREEZE_GLROOT);
 
@@ -1421,6 +1556,18 @@ public abstract class PhotoPage extends ActivityState implements
 
         mRecenterCameraOnResume = true;
         mHandler.sendEmptyMessageDelayed(MSG_UNFREEZE_GLROOT, UNFREEZE_GLROOT_TIMEOUT);
+        IntentFilter intentFilter = new IntentFilter(PHOTOPAGE_UPDATE);
+        if (mSwitchReceiver == null) {
+            mSwitchReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context arg0, Intent arg1) {
+                    mSwithHandler.removeMessages(MSG);
+                    mSwithHandler.sendEmptyMessageDelayed(MSG, 50);
+                }
+            };
+        }
+        mActivity.getAndroidContext().registerReceiver(mSwitchReceiver,
+                intentFilter);
     }
 
     @Override

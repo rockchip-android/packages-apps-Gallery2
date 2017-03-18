@@ -39,6 +39,16 @@ import com.android.gallery3d.data.Path;
 import com.android.gallery3d.picasasource.PicasaSource;
 import com.android.gallery3d.util.GalleryUtils;
 
+// $_rbox_$_modify_$_chengmingchuan_$20140225
+// $_rbox_$_modify_$_begin
+import android.view.KeyEvent;
+import android.os.Environment;
+import com.android.gallery3d.ui.GLRootView;
+import com.android.gallery3d.ui.GLRoot;
+import android.content.Context;
+// $_rbox_$_modify_$_end
+
+
 public final class GalleryActivity extends AbstractGalleryActivity implements OnCancelListener {
     public static final String EXTRA_SLIDESHOW = "slideshow";
     public static final String EXTRA_DREAM = "dream";
@@ -202,7 +212,12 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
                     startDefaultPage();
                 }
             } else {
-                Path itemPath = dm.findPathByUri(uri, contentType);
+//                Path itemPath = dm.findPathByUri(uri, contentType);
+                String type = contentType;
+                if(type.trim().equals("*/*")){
+                    type = "image/*";
+                }
+                Path itemPath = dm.findPathByUri(uri, type);
                 Path albumPath = dm.getDefaultSetOf(itemPath);
 
                 data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
@@ -251,6 +266,33 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
             mVersionCheckDialog = null;
         }
     }
+
+
+    // $_rbox_$_modify_$_chengmingchuan_$_20140225_$_[Info: Handle Keycode]
+    // $_rbox_$_modify_$_begin
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+         if(KeyEvent.KEYCODE_BACK==keyCode){
+         this.onBackPressed();
+         return true;
+     }
+
+     GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
+         boolean flag = getStateManager().onKeyDown(keyCode, event);
+         if(flag){
+          ((GLRootView)root).setFocusable(true);
+          ((GLRootView)root).requestFocus();
+         }else{
+             ((GLRootView)root).setFocusable(false);
+         }
+            return flag||super.onKeyDown(keyCode, event);
+        } finally {    
+            root.unlockRenderThread();
+       }
+    }
+    // $_rbox_$_modify_$_end
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {

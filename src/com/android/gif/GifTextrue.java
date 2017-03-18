@@ -6,7 +6,7 @@
  * Description    : extends BasicTexture to support gif animation
  * Author        : jyzheng
  * Date          : 2012-02-25
- *
+ * 
  ************************************************************/
 package com.android.gif;
 
@@ -35,7 +35,7 @@ public class GifTextrue{
      * rockchips jyzheng Add begin for [support uri gif] 2012-02-25
      */
     private final boolean DEBUG = true;
-    private void LOG(String str) {
+    private void LOG(String str){
         if(DEBUG){
             Log.v(TAG, str);
         }
@@ -47,18 +47,20 @@ public class GifTextrue{
             try {
                 id += (char) is.read();
             } catch (IOException e) {
+
                 e.printStackTrace();
                 return false;
             }catch(NullPointerException e){
-                //	e.printStackTrace();
+            //  e.printStackTrace();
                 return false;
             }
         }
         return id.startsWith("GIF");
+
     }
 
     public InputStream getInputStream() {
-//		Log.v("GifTextrue", "=====================mFilePath:"+mFilePath);
+//      Log.v("GifTextrue", "=====================mFilePath:"+mFilePath);
         try {
             return new FileInputStream(new File(mFilePath));
         } catch (FileNotFoundException e) {
@@ -81,57 +83,60 @@ public class GifTextrue{
 
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case START:
-                    InputStream is = getInputStream();
-                    if (is == null) {
-                        Log.e(TAG, "getInputStream returns null");
-                        break;
-                    }
-                    final boolean[] decodingOK = new boolean[] { true };
-                    mGifDecoder = new GifDecoder(is, new GifAction() {
-                        public void parseOk(boolean parseStatus, int frameIndex) {
-                            if (!parseStatus) {
-                                Log.e(TAG, "parse gif with error");
-                                decodingOK[0] = false;
-                            }
+            case START:
+                InputStream is = getInputStream();
+                if (is == null) {
+                    Log.e(TAG, "getInputStream returns null");
+                    break;
+                }
+                final boolean[] decodingOK = new boolean[] { true };
+                mGifDecoder = new GifDecoder(is, new GifAction() {
+                    public void parseOk(boolean parseStatus, int frameIndex) {
+                        if (!parseStatus) {
+                            Log.e(TAG, "parse gif with error");
+                            decodingOK[0] = false;
                         }
-                    });
-                    try{
-                        mGifDecoder.run();
-                    } catch(OutOfMemoryError e) {
-                        e.printStackTrace();
-                        System.gc();
                     }
-                    if (decodingOK[0]) {
-                        sendEmptyMessage(UPDATE);
+                });
+                try{
+                   mGifDecoder.run();
+                }catch(OutOfMemoryError e){
+                    e.printStackTrace();
+                    System.gc();
+                }
+
+                if (decodingOK[0]) {
+                    sendEmptyMessage(UPDATE);
+                }
+
+                break;
+            case UPDATE:
+                GifDecoder decoder = mGifDecoder;
+                GifFrame frame = decoder.next();
+                if (frame != null && frame.image != null) {
+                    mBitmap = frame.image;
+                    long delay = MIN_DELAY;
+                    if (frame.delay > delay) {
+                        delay = frame.delay;
                     }
-                    break;
-                case UPDATE:
-                    GifDecoder decoder = mGifDecoder;
-                    GifFrame frame = decoder.next();
-                    if (frame != null && frame.image != null) {
-                        mBitmap = frame.image;
-                        long delay = MIN_DELAY;
-                        if (frame.delay > delay) {
-                            delay = frame.delay;
-                        }
-                        mTileImageView.invalidate();
-                        sendEmptyMessageDelayed(UPDATE, delay);
-                    } else {
-                        sendEmptyMessageDelayed(UPDATE, MIN_DELAY);
-                    }
-                    break;
-                case STOP:
-                    /** suppose start is called */
-                    if(mGifDecoder != null){
-                        mGifDecoder.free();
-                    }
-                    mGifDecoder = null;
-                    /** looper.quit will be called by thread.quit */
-                    // this.getLooper().quit();
-                    Runnable r = (Runnable) msg.obj;
-                    r.run();
-                    break;
+                    mTileImageView.invalidate();
+                    sendEmptyMessageDelayed(UPDATE, delay);
+                } else {
+                    sendEmptyMessageDelayed(UPDATE, MIN_DELAY);
+                }
+                break;
+            case STOP:
+                /** suppose start is called */
+                if(mGifDecoder != null){
+                   mGifDecoder.free();
+                }
+                mGifDecoder = null;
+                /** looper.quit will be called by thread.quit */
+                // this.getLooper().quit();
+                Runnable r = (Runnable) msg.obj;
+                r.run();
+                break;
+
             }
         }
     }
@@ -150,19 +155,19 @@ public class GifTextrue{
     private BitmapTexture mBitmapTexture = null;
     public int mImageWidth = 0;
     public int mImageHeight = 0;
-
-    public BitmapTexture getBitmapTexture() {
-        if(mBitmapTexture == null || mBitmapTexture.getBitmap() != mBitmap) {
-            if(mBitmap != null && !mBitmap.isRecycled()) {
-                if(mBitmapTexture != null && mBitmapTexture.mBitmap != null) {
-                    mBitmapTexture.mBitmap.recycle();
-                    mBitmapTexture.mBitmap= null;
-                }
-                if(mBitmapTexture != null) {
-                    mBitmapTexture.recycle();
-                }
-                mBitmapTexture = null;
-                mBitmapTexture = new BitmapTexture(mBitmap);
+    
+    public BitmapTexture getBitmapTexture(){
+        if(mBitmapTexture == null || mBitmapTexture.getBitmap() != mBitmap){
+            if(mBitmap != null && !mBitmap.isRecycled()){
+               if(mBitmapTexture != null && mBitmapTexture.mBitmap != null){
+                   mBitmapTexture.mBitmap.recycle();
+                   mBitmapTexture.mBitmap= null;
+               }
+               if(mBitmapTexture != null){
+                  mBitmapTexture.recycle();
+               }
+               mBitmapTexture = null;
+               mBitmapTexture = new BitmapTexture(mBitmap);
             }
         }
         return mBitmapTexture;
@@ -172,6 +177,7 @@ public class GifTextrue{
         mTileImageView = t;
         mBitmap = bitmap;
         mFilePath = filePath;
+
     }
 
     public static String THREAD_NAME = "GifThead";
@@ -180,6 +186,7 @@ public class GifTextrue{
         Log.i(TAG, "tryAnimate called for [" + this.mFilePath + "]");
         if (mHandler == null) {
             mThread = new HandlerThread("GifThead");
+
             mThread.start();
             mHandler = new GifHandler(mThread.getLooper());
         }
@@ -200,4 +207,5 @@ public class GifTextrue{
             mThread = null;
         }
     }
+
 }

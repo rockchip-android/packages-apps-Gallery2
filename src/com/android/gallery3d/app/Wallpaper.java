@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.app;
 
+import android.util.Log;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
@@ -87,6 +89,7 @@ public class Wallpaper extends Activity {
         Intent intent = getIntent();
         switch (mState) {
             case STATE_INIT: {
+                Log.d(TAG, "onResume mState=STATE_INIT");
                 mPickedItem = intent.getData();
                 if (mPickedItem == null) {
                     Intent request = new Intent(Intent.ACTION_GET_CONTENT)
@@ -99,6 +102,7 @@ public class Wallpaper extends Activity {
                 // fall-through
             }
             case STATE_PHOTO_PICKED: {
+                Log.d(TAG, "onResume mState=STATE_PHOTO_PICKED");
                 Intent cropAndSetWallpaperIntent;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     WallpaperManager wpm = WallpaperManager.getInstance(getApplicationContext());

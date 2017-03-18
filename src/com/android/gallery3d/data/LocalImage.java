@@ -19,6 +19,7 @@ package com.android.gallery3d.data;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -44,13 +45,11 @@ import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.android.gallery3d.util.UpdateHelper;
+import com.android.gif.GifTextrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import android.content.Context;
-import com.android.gif.GifTextrue;
 import java.io.InputStream;
 
 // LocalImage represents an image in the local storage.
@@ -196,7 +195,7 @@ public class LocalImage extends LocalMediaItem {
         @Override
         public Bitmap onDecodeOriginal(JobContext jc, final int type) {
             if(type == MediaItem.TYPE_DECODE){
-                return new com.android.gallery3d.util.BitmapUtils(mApplication.getAndroidContext())
+                  return new com.android.gallery3d.util.BitmapUtils(mApplication.getAndroidContext())
                     .getBitmap(getContentUri(), 1024, 768);
             }
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -248,14 +247,17 @@ public class LocalImage extends LocalMediaItem {
     @Override
     public int getSupportedOperations() {
         int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP
-                | SUPPORT_SETAS | SUPPORT_PRINT | SUPPORT_INFO;
+                | SUPPORT_PRINT | SUPPORT_INFO;
         if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
-            operation |= SUPPORT_FULL_IMAGE | SUPPORT_EDIT;
+            operation |= SUPPORT_SETAS;
         }
-
-        //if (BitmapUtils.isRotationSupported(mimeType)) {
+        if (mimeType != null && mimeType.toLowerCase().indexOf("gif") == -1) {
+            operation |= SUPPORT_EDIT;
+        }
+         operation |= SUPPORT_FULL_IMAGE;
+//        if (BitmapUtils.isRotationSupported(mimeType)) {
             operation |= SUPPORT_ROTATE;
-        //}
+//        }
 
         if (GalleryUtils.isValidLocation(latitude, longitude)) {
             operation |= SUPPORT_SHOW_ON_MAP;
@@ -339,11 +341,32 @@ public class LocalImage extends LocalMediaItem {
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
         details.addDetail(MediaDetails.INDEX_ORIENTATION, Integer.valueOf(rotation));
-        if (MIME_TYPE_JPEG.equals(mimeType)) {
+//        if (MIME_TYPE_JPEG.equals(mimeType)) {
             // ExifInterface returns incorrect values for photos in other format.
             // For example, the width and height of an webp images is always '0'.
             MediaDetails.extractExifInfo(details, filePath);
-        }
+            if (width == 0 || height == 0) {
+                try {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(filePath, options);
+                    width = options.outWidth;
+                    height = options.outHeight;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if(width > 0){
+                MediaDetails.setWidth(details, width);
+            }
+            if(height > 0){
+                MediaDetails.setHeight(details, height);
+            }
+            int w = rotation % 180 == 0 ? getWidth() : getHeight();
+            int h = rotation % 180 == 0 ? getHeight() : getWidth();
+            MediaDetails.setWidth(details, w);
+            MediaDetails.setHeight(details, h);
+//        }
         return details;
     }
 
@@ -366,12 +389,11 @@ public class LocalImage extends LocalMediaItem {
     public String getFilePath() {
         return filePath;
     }
-
+    
     @Override
     public Job<BitmapInfo> requestDecodeImage(int type, Uri mUri) {
         return new BitmapJob(type,mUri);
     }
-
     private class BitmapJob implements Job<BitmapInfo> {
         private int mType;
         private Uri mUri;
